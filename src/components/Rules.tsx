@@ -7,7 +7,7 @@ const rules = [
   {
     id: 2,
     name: "Guess letters",
-    rule: "Take turns guessing letters. The computer fills in the relevant blank spaces if your guess is correct. If it’s wrong, you lose some health, which empties after eight incorrect guesses.",
+    rule: "Take turns guessing letters. The computer fills in the relevant blank spaces if your guess is correct. If it's wrong, you lose some health, which empties after eight incorrect guesses.",
   },
   {
     id: 3,
@@ -18,10 +18,14 @@ const rules = [
 
 const Rules = () => {
   return (
-    <main className="min-h-screen bg-[url('/images/background-mobile.svg')] md:bg-[url('/images/background-desktop.svg')] lg:bg-[url('/images/background-desktop.svg')] bg-cover md:bg-cover bg-center bg-no-repeat flex items-center justify-center">
-      <div className="flex flex-col items-center justify-center">
-        <h1 className="text-[48px] w-full text-center md:text-[104px] lg:text-[136px] font-medium bg-gradient-to-b from-[#67B6FF] to-to-white bg-clip-text leading-[120%] text-stroke -tracking-[0.5%]">
-          How to Play
+    <main className="min-h-screen flex items-center justify-center relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#1A043A] via-[#151278] to-[#2b00c7]"></div>
+      <div className="absolute inset-0 bg-[url('/images/background-mobile.svg')] md:bg-[url('/images/background-desktop.svg')] lg:bg-[url('/images/background-desktop.svg')] bg-cover bg-center bg-no-repeat opacity-50"></div>
+      <div className="flex flex-col items-center justify-center relative z-10">
+        <h1 className="text-[48px] w-full text-center md:text-[104px] lg:text-[136px] font-medium  text-transparent leading-[120%] -tracking-[0.5%]">
+          <span className=" bg-gradient-to-b text-stroke from-[#67B6FF] to-white bg-clip-text">
+            How to Play
+          </span>
         </h1>
 
         <div className="flex flex-row gap-[25px] mt-5">
@@ -46,4 +50,5 @@ const Rules = () => {
     </main>
   );
 };
+
 export default Rules;

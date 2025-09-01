@@ -6,5 +6,4 @@ body {
 
 @utility text-stroke {
   -webkit-text-stroke: 8px #243041;
-  -webkit-text-fill-color: white;
 }
