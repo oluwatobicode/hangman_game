@@ -146,6 +146,8 @@ interface GameActionProps {
   quitGame: () => void;
 }
 
+// adding this line for cruise
+
 type WordData = { name: string; selected: boolean; category: string };
 
 const GameContext = createContext<GameState | undefined>(undefined);

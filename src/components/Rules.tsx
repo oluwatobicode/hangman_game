@@ -24,7 +24,7 @@ const Rules = () => {
       <div className="flex flex-col items-center justify-center relative z-10">
         <h1 className="text-[48px] w-full text-center md:text-[104px] lg:text-[136px] font-medium  text-transparent leading-[120%] -tracking-[0.5%]">
           <span className=" bg-gradient-to-b text-stroke from-[#67B6FF] to-white bg-clip-text">
-            How to Playy
+            How to Playyyyyymm
           </span>
         </h1>
 
