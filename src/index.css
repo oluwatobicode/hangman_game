@@ -4,6 +4,14 @@ body {
   font-family: "Mouse Memoirs", sans-serif;
 }
 
-@utility text-stroke {
-  -webkit-text-stroke: 8px #243041;
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 4px #243041;
+  }
+
+  @media (min-width: 768px) {
+    .text-stroke {
+      -webkit-text-stroke: 8px #243041;
+    }
+  }
 }
