@@ -2,21 +2,24 @@ import { BrowserRouter, Route, Routes } from "react-router";
 
 import Start from "./pages/Start";
 import Rules from "./components/Rules";
-import GameBoard from "./components/GameBoard";
+import Games from "./pages/Game";
 import WordCategory from "./components/WordCategory";
+import GameProvider from "./contexts/GameProvider";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Start />} />
+    <GameProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Start />} />
 
-        <Route path="/category" element={<WordCategory />} />
-        <Route path="/category/game" element={<GameBoard />} />
+          <Route path="/category" element={<WordCategory />} />
+          <Route path="/category/game" element={<Games />} />
 
-        <Route path="/rules" element={<Rules />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/rules" element={<Rules />} />
+        </Routes>
+      </BrowserRouter>
+    </GameProvider>
   );
 }
 

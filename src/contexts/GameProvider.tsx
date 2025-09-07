@@ -152,9 +152,10 @@ type WordData = { name: string; selected: boolean; category: string };
 
 const GameContext = createContext<GameState | undefined>(undefined);
 
-export const GameProvider = ({ children }: GameActionProps) => {
-  const [secretWord, setSecretWord] = useState<string>("");
-  const [category, selectedCategory] = useState<string>("");
+export const GameProvider = ({ children }: React.ReactNode) => {
+  const [secretWord, setSecretWord] = useState<string>("Treasure");
+  const [category, selectedCategory] = useState<string>("Countries");
+  const [guessedLetter, setGuessedLetter] = useState<string>("Treasure");
   const [showMenu, setShowMenu] = useState<boolean>(false);
 
   return (
@@ -162,6 +163,8 @@ export const GameProvider = ({ children }: GameActionProps) => {
       value={{
         secretWord,
         setSecretWord,
+        // guessedLetter,
+        guessedLetter,
         category,
         selectedCategory,
         showMenu,
