@@ -122,6 +122,7 @@ revelation state: ["B", "A", "_", "A", "_", "A"]
 */
 
 interface GameState {
+  displaySecretWord: string[];
   secretWord: string;
   setSecretWord: Dispatch<SetStateAction<string>>;
   category: string;
@@ -131,6 +132,7 @@ interface GameState {
   gameStatus: "menu" | "playing" | "won" | "lost";
   health: number;
   guessedLetters: string[];
+  setGuessedLetters: Dispatch<SetStateAction<string[]>>;
   revealedWord: string[];
 }
 
@@ -155,20 +157,69 @@ const GameContext = createContext<GameState | undefined>(undefined);
 export const GameProvider = ({ children }: React.ReactNode) => {
   const [secretWord, setSecretWord] = useState<string>("Treasure");
   const [category, selectedCategory] = useState<string>("Countries");
-  const [guessedLetter, setGuessedLetter] = useState<string>("Treasure");
+  const [guessedLetters, setGuessedLetters] = useState<Array<string>>([
+    "T",
+    "",
+    "E",
+  ]);
   const [showMenu, setShowMenu] = useState<boolean>(false);
+
+  /* 
+  When building displaySecretWord:
+Take each letter from "Treasure"
+Convert it to uppercase temporarily ("T", "R", "E", "A", "S", "U", "R", "E")
+Check if this uppercase version exists in guessedLetters
+If match found → show original casing letter from secretWord
+If no match → show underscore
+
+Two Ways to Think About This:
+Approach 1: Use Index Reference
+Split the original word to keep original casing
+Use the index to compare against the lowercase version
+Return the original casing letter when there's a match
+
+  */
+
+  const displaySecretWord = secretWord.split("").map((letter) => {
+    console.log(guessedLetters);
+    const isGuessed = guessedLetters.some(
+      (guessedLetter) => guessedLetter.toLowerCase() === letter.toLowerCase()
+    );
+    return isGuessed ? letter : "_";
+  });
+
+  // tried converting it to lowercase the letter to be checked to lowercase but it did not work
+  // note the alphabet that is being rendered shows from A - Z in all capital letters
+
+  /* 
+  // I learnt that this would not allow the secret word to be guessed properly ->   
+  // const [guessedLetters, setGuessedLetters] = useState<Array<string>>([
+    "T, r",
+  ]);
+
+
+  // but this would allow it show properly 
+  const [guessedLetter, setGuessedLetters] = useState<Array<string>>([
+  "T",
+  "r"
+  ])
+
+  */
+
+  console.log(displaySecretWord);
 
   return (
     <GameContext.Provider
       value={{
         secretWord,
         setSecretWord,
-        // guessedLetter,
-        guessedLetter,
+        guessedLetters,
+        setGuessedLetters,
         category,
         selectedCategory,
         showMenu,
         setShowMenu,
+        displaySecretWord,
       }}
     >
       {children}
