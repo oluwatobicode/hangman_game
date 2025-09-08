@@ -156,11 +156,12 @@ const GameContext = createContext<GameState | undefined>(undefined);
 
 export const GameProvider = ({ children }: React.ReactNode) => {
   const [secretWord, setSecretWord] = useState<string>("Treasure");
-  const [category, selectedCategory] = useState<string>("Countries");
+  const [category, selectedCategory] = useState<string>("Movies");
   const [guessedLetters, setGuessedLetters] = useState<Array<string>>([
-    "T",
-    "",
-    "E",
+    "l",
+    "r",
+    "a",
+    "t",
   ]);
   const [showMenu, setShowMenu] = useState<boolean>(false);
 
@@ -181,6 +182,7 @@ Return the original casing letter when there's a match
   */
 
   const displaySecretWord = secretWord.split("").map((letter) => {
+    if (letter === " ") return " ";
     console.log(guessedLetters);
     const isGuessed = guessedLetters.some(
       (guessedLetter) => guessedLetter.toLowerCase() === letter.toLowerCase()

@@ -15,3 +15,5 @@ body {
     }
   }
 }
+
+@custom-variant hover (&:hover);

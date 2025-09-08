@@ -6,7 +6,7 @@ const Navbar = () => {
   return (
     <nav className="w-full flex items-center">
       <div className="flex items-center justify-center mr-auto gap-[16px] md:gap-[32px] lg:gap-[57px]">
-        <button className="cursor-pointer w-[40px] h-[40px] md:w-[64px] md:h-[64px] lg:w-[94px] lg:h-[94px] flex items-center justify-center rounded-full shadow-[inset_0_-5px_0_-1px,#9D2DF5]  bg-gradient-to-b from-[#FE71FE] to-[#7199FF]">
+        <button className="cursor-pointer w-[40px] h-[40px] md:w-[64px] md:h-[64px] lg:w-[94px] lg:h-[94px] flex items-center justify-center rounded-full shadow-[inset_0_-6px_0_7px_rgba(157,45,245,0.25)] bg-gradient-to-b from-[#FE71FE] to-[#7199FF]">
           <img
             className="w-[16.17px] h-[13.62px] md:w-[25.87px] md:h-[21.79px] lg:w-[38px] lg:h-[32px]"
             src="/images/icon-menu.svg"
