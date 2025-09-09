@@ -76,8 +76,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   // handle alphabet clicked
   const handleAlphabetClick = (letter: string) => {
+    // this is going to allow clicks if game is playing
     if (gameStatus !== "playing") return;
 
+    // this checks if the letter has already been guessed
     const checkIsGuessed = guessedLetters.some(
       (guessedLetters) => guessedLetters.toLowerCase() === letter.toLowerCase()
     );
@@ -88,6 +90,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     reduceHealthPoints(10, letter, secretWord);
   };
 
+  // this is to check for a win condition
   useEffect(() => {
     if (gameStatus !== "playing") return;
 
@@ -96,6 +99,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [guessedLetters, secretWord, gameStatus]);
 
+  // Check for lose condition
   useEffect(() => {
     if (gameStatus !== "playing") return;
 
@@ -106,14 +110,21 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (gameStatus === "setup") {
-      setPlayerHealth(100);
+      setPlayerHealth(maxPlayerHealth);
       setGuessedLetters([]);
-      setSecretWord("TREASURE");
+      setSecretWord("");
       setSelectedCategory("");
       setShowMenu(false);
+      // Don't set gameStatus here - it's already "setup"
     }
   }, [gameStatus, maxPlayerHealth]);
 
+  // generating the display secret word
+  // this is the logic that will display the secret word with underscores and revealed letters
+  // if the letter is in the guessed letters array it will be revealed otherwise it will be an underscore
+  // also considering spaces in the secret word
+  // e.g "The Lion King" -> ["T", "_", "_", " ", "L", "_", "_", " ", "K", "_", "_"]
+  // e.g "The Lion King" with guessed letters ["T", "L", "K"] -> ["T", "_", "_", " ", "L", "_", "_", " ", "K", "_", "_"]
   const displaySecretWord = secretWord.split("").map((letter) => {
     if (letter === " ") return " ";
     console.log(guessedLetters);

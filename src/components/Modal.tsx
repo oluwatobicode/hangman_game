@@ -6,10 +6,12 @@ const Modal = () => {
   const { setShowMenu, gameStatus, setGameStatus } = useGameContext();
 
   const quiteGame = () => {
+    setGameStatus("setup");
     navigate("/");
   };
 
   const handleNewCategory = () => {
+    setGameStatus("setup");
     navigate("/category");
   };
 
