@@ -23,12 +23,12 @@ const createBalancedColumns = (words: string[]) => {
 
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
-    //   this sis for adding spaces if not first word in row
-    const charsToAdd = word.length + (currentRowChars > 0 ? 1 : 0);
+    //   this is for adding spaces if not first word in row
+    const charsToAdd = word.length + (currentRowChars > 1 ? 0 : 1);
 
     // if adding this word would make row1 longer than row2,
     // put it and remaining words in row2
-    if (currentRowChars > 0 && currentRowChars + charsToAdd > targetRows + 2) {
+    if (currentRowChars > 2 && currentRowChars + charsToAdd > targetRows) {
       // this puts the remaining word in row2
       row2 = words.slice(i);
       break;
@@ -47,10 +47,10 @@ const DisplayWord = () => {
   const words = secretWord.split(" ");
   const [row1Words, row2Words] = createBalancedColumns(words);
 
-  //   calculate where to split the displaysecretword array
+  //   calculate where to split the display secret word array
   const row1Length = row1Words.join(" ").length;
 
-  // split displaysecretword into tow arrays
+  // split display secret word into tow arrays
   const row1Display = displaySecretWord.slice(0, row1Length);
 
   const row2Display = displaySecretWord.slice(row1Length + 1);

@@ -155,7 +155,7 @@ type WordData = { name: string; selected: boolean; category: string };
 const GameContext = createContext<GameState | undefined>(undefined);
 
 export const GameProvider = ({ children }: React.ReactNode) => {
-  const [secretWord, setSecretWord] = useState<string>("Treasure");
+  const [secretWord, setSecretWord] = useState<string>("The Godfather");
   const [category, selectedCategory] = useState<string>("Movies");
   const [guessedLetters, setGuessedLetters] = useState<Array<string>>([
     "l",
