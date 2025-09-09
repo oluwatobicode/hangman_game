@@ -1,69 +1,97 @@
-# React + TypeScript + Vite
+# Hangman Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern implementation of the classic Hangman word guessing game built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## 🎮 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Interactive gameplay with visual feedback
+- Multiple word categories to choose from
+- Responsive design for desktop, tablet, and mobile devices
+- Modern UI with smooth animations
+- Game rules section
+- Score tracking
 
-## Expanding the ESLint configuration
+## 🛠️ Technologies Used
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React
+- TypeScript
+- Vite
+- TailwindCSS
+- React Router
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js (Latest LTS version recommended)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/oluwatobicode/hangman_game.git
+cd hangman-game
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+1. Start the development server
+
+```bash
+npm run dev
+```
+
+1. Open your browser and navigate to `http://localhost:5173`
+
+## 📝 Available Scripts
+
+- `npm run dev` - Start the development server
+- `npm run build` - Create a production build
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview the production build locally
+
+## 🎨 Project Structure
+
+```plaintext
+src/
+├── components/     # Reusable UI components
+├── contexts/       # React Context providers
+├── data/          # Game data and configurations
+├── pages/         # Main application pages
+└── App.tsx        # Main application component
+```
+
+## 🎯 Game Rules
+
+1. Select a word category
+2. Try to guess the hidden word one letter at a time
+3. You have a limited number of attempts to guess the word correctly
+4. Each incorrect guess brings you closer to losing
+5. Guess the word before running out of attempts to win!
+
+## 🔥 Features to Add
+
+- [ ] Additional word categories
+- [ ] Difficulty levels
+- [ ] Multiplayer mode
+- [ ] High scores leaderboard
+- [ ] Sound effects and background music
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👏 Acknowledgments
+
+- Thanks to the React and Vite communities for the amazing tools
+- Inspired by the classic Hangman game
+
+---
+
+Built with ❤️ by [oluwatobicode](https://github.com/oluwatobicode)

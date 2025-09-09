@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useGameContext } from "../contexts/GameProvider";
 
 const categories = [
   {
@@ -29,14 +30,16 @@ const categories = [
 
 const WordCategory = () => {
   const navigate = useNavigate();
+  const { setSelectedCategory, setGameStatus } = useGameContext();
 
   const handleGoBack = () => {
     navigate("/");
   };
 
-  const handleCatgeoryClick = () => {
-    console.log("hi");
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
     navigate("/category/game");
+    setGameStatus("playing");
   };
 
   return (
@@ -68,8 +71,8 @@ const WordCategory = () => {
             {categories.map((el, i) => (
               <button
                 key={i}
-                onClick={handleCatgeoryClick}
-                className="text-white text-[24px] md:text-[48px] tracking-[5%] leading-[120%] cursor-pointer hover:bg-white/25 transition-all duration-200 font-normal bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] lg:w-[384px] lg:h-[190px] md:w-full md:h-[182.67px] w-full h-[77px] md:rounded-[40px] rounded-[20px]"
+                onClick={() => handleCategoryClick(el.name)}
+                className="text-white text-[24px] md:text-[48px] tracking-[5%] leading-[120%] cursor-pointer transition-all duration-200 font-normal bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] lg:w-[384px] lg:h-[190px] md:w-full md:h-[182.67px] w-full h-[77px] md:rounded-[40px] rounded-[20px]"
               >
                 {el.name}
               </button>
