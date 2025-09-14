@@ -13,8 +13,10 @@ const Navbar = () => {
   } = useGameContext();
 
   const toggleMenu = () => {
+    if (!showMenu && gameStatus === "playing") {
+      setGameStatus("paused");
+    }
     setShowMenu(!showMenu);
-    setGameStatus("paused");
   };
 
   const healthPercentage =
@@ -42,7 +44,7 @@ const Navbar = () => {
       </div>
 
       <div className="ml-auto flex items-center gap-[16px] md:gap-[40px]">
-        <div className="w-[57px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-contain   lg:h-[31px] rounded-[96px] bg-white">
+        <div className="w-[57px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-full lg:h-[31px] rounded-[96px] bg-white">
           <div
             className="absolute lg:h-[13px] md:h-[13px] h-[8px] transform translate-y-1 translate-x-1 md:translate-y-2.5 md:translate-x-2.5 bg-[#261676] rounded-[96px] transition-all duration-300 ease-out"
             style={{ width: `${healthPercentage}%` }}
@@ -58,7 +60,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {showMenu && <Modal />}
       {(gameStatus === "won" ||
         gameStatus === "lost" ||
         gameStatus === "paused") && <Modal />}

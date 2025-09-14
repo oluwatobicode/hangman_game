@@ -3,22 +3,23 @@ import { useGameContext } from "../contexts/GameProvider";
 
 const Modal = () => {
   const navigate = useNavigate();
-  const { setShowMenu, gameStatus, setGameStatus } = useGameContext();
+  const { setShowMenu, gameStatus, resetGame } = useGameContext();
 
   const quiteGame = () => {
-    setGameStatus("setup");
+    resetGame();
     navigate("/");
   };
 
   const handleNewCategory = () => {
-    setGameStatus("setup");
+    resetGame();
     navigate("/category");
   };
 
   const handleContinue = () => {
     console.log("continue");
     setShowMenu(false);
-    setGameStatus("playing");
+    if (gameStatus === "paused") {
+    }
   };
 
   return (
@@ -38,12 +39,14 @@ const Modal = () => {
         </div>
 
         <div className="flex flex-col items-center justify-center gap-4 mt-10">
-          <button
-            onClick={handleContinue}
-            className="lg:w-[226px] lg:h-[62px] lg:rounded-[40px] bg-blue shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] text-white lg:text-[32px] tracking-[5%] leading-[120%] cursor-pointer md:w-[226px] md:h-[62px] md:rounded-[40px] w-[226px] h-[62px] rounded-[40px] bg-[#2463FF]"
-          >
-            CONTINUE
-          </button>
+          {gameStatus === "paused" && (
+            <button
+              onClick={handleContinue}
+              className="lg:w-[226px] lg:h-[62px] lg:rounded-[40px] bg-blue shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] text-white lg:text-[32px] tracking-[5%] leading-[120%] cursor-pointer md:w-[226px] md:h-[62px] md:rounded-[40px] w-[226px] h-[62px] rounded-[40px] bg-[#2463FF]"
+            >
+              CONTINUE
+            </button>
+          )}
           <button
             onClick={handleNewCategory}
             className="lg:w-[275px] lg:h-[62px] lg:rounded-[40px] bg-blue shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] text-white lg:text-[32px] tracking-[5%] leading-[120%] cursor-pointer md:w-[275px] md:h-[62px] md:rounded-[40px] w-[275px] h-[62px] rounded-[40px] bg-[#2463FF]"

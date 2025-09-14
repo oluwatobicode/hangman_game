@@ -1,3 +1,5 @@
+import wordData from "../data/data.json";
+
 import {
   createContext,
   useContext,
@@ -25,22 +27,37 @@ interface GameState {
   setPlayerHealth: Dispatch<SetStateAction<number>>;
   maxPlayerHealth: number;
   handleAlphabetClick: (letter: string) => void;
+  resetGame: () => void; // Added reset function
 }
-
-type WordData = { name: string; selected: boolean; category: string };
 
 const GameContext = createContext<GameState | undefined>(undefined);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const maxPlayerHealth = 100;
-  const [secretWord, setSecretWord] = useState<string>("Treasure");
+  const [secretWord, setSecretWord] = useState<string>("");
   const [category, setSelectedCategory] = useState<string>("");
   const [guessedLetters, setGuessedLetters] = useState<Array<string>>([]);
   const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [playerHealth, setPlayerHealth] = useState<number>(90);
+  const [playerHealth, setPlayerHealth] = useState<number>(maxPlayerHealth);
   const [gameStatus, setGameStatus] = useState<
     "playing" | "won" | "lost" | "paused" | "setup"
   >("setup");
+
+  console.log(wordData);
+  console.log(category.toLocaleUpperCase());
+
+  console.log("Navbar render - gameStatus:", gameStatus);
+  console.log("Navbar render - showMenu:", showMenu);
+
+  // Function to reset all game state
+  const resetGame = () => {
+    setPlayerHealth(maxPlayerHealth);
+    setGuessedLetters([]);
+    setSecretWord("");
+    setSelectedCategory("");
+    setShowMenu(false);
+    setGameStatus("setup");
+  };
 
   // this is checking IF THE WORD IS GUESSED COMPLETELY
   const checkIsWordGuessed = (
@@ -88,8 +105,49 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     reduceHealthPoints(10, letter, secretWord);
   };
 
+  // Effect for category selection - reset guessed letters when category changes
+  useEffect(() => {
+    if (!category) return;
+
+    // Reset guessed letters when selecting a new category
+    setGuessedLetters([]);
+    setPlayerHealth(maxPlayerHealth);
+
+    const formatCategoryName = (categoryName: string) => {
+      return categoryName
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    };
+
+    const getRandomWordFromCategory = (categoryName: string): string | null => {
+      const categoryData =
+        wordData.categories[categoryName as keyof typeof wordData.categories];
+
+      if (!categoryName || !categoryData || categoryData.length === 0) {
+        return null;
+      }
+
+      const randomIndex = Math.floor(Math.random() * categoryData.length);
+      return categoryData[randomIndex].name;
+    };
+
+    // format the category
+    const formattedCategory = formatCategoryName(category);
+
+    // get a random word
+    const randomWord = getRandomWordFromCategory(formattedCategory);
+
+    if (randomWord) {
+      setSecretWord(randomWord);
+    }
+  }, [category, maxPlayerHealth]);
+
   useEffect(() => {
     if (gameStatus !== "playing") return;
+
+    if (!secretWord || secretWord.trim() === "") return;
 
     if (checkIsWordGuessed(secretWord, guessedLetters)) {
       setGameStatus("won");
@@ -104,15 +162,19 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [playerHealth, gameStatus]);
 
+  // Simplified setup effect - only reset when explicitly needed
   useEffect(() => {
     if (gameStatus === "setup") {
-      setPlayerHealth(100);
-      setGuessedLetters([]);
-      setSecretWord("TREASURE");
-      setSelectedCategory("");
+      // Only reset if we're not coming from a category selection
+      if (!category) {
+        setPlayerHealth(maxPlayerHealth);
+        setGuessedLetters([]);
+        setSecretWord("");
+        setSelectedCategory("");
+      }
       setShowMenu(false);
     }
-  }, [gameStatus, maxPlayerHealth]);
+  }, [gameStatus, maxPlayerHealth, category]);
 
   const displaySecretWord = secretWord.split("").map((letter) => {
     if (letter === " ") return " ";
@@ -143,6 +205,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         handleAlphabetClick,
         gameStatus,
         setGameStatus,
+        resetGame,
       }}
     >
       {children}

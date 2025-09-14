@@ -13,8 +13,8 @@ const Menu = () => {
 
   return (
     <div className="shadow-[inset_0_6px_0_8px_#2463FF] h-[481px] w-[324px] md:w-[592px] md:h-[500px] rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50">
-      <div className="shadow-[inset_0_-8px_0_4px_#140E66] flex flex-col items-center justify-center h-[481px] w-[324px] md:w-[592px] md:h-[500px] rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50">
-        <div className="absolute transform -translate-y-12 top-0  md:-translate-y-20 md:translate-x-10 translate-x-17 -left-10 md:left-20">
+      <div className="shadow-[inset_0_-8px_0_4px_#140E66]  flex flex-col items-center justify-center h-[481px] w-[324px] md:w-[592px] md:h-[500px] rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50">
+        <div className="absolute transform -translate-y-12 pt-5 top-0  md:-translate-y-20 md:translate-x-10 translate-x-17 -left-10 md:left-20">
           <img
             className="md:w-[373.69px] md:h-[185px] lg:w-[373.69px] lg:h-[185px] w-[263px] h-[126.72px]"
             src="/images/logo.svg"

@@ -4,27 +4,27 @@ import { useGameContext } from "../contexts/GameProvider";
 const categories = [
   {
     name: "MOVIES",
-    type: "movies",
+    type: "Movies",
   },
   {
     name: "TV SHOWS",
-    type: "tv_shows",
+    type: "Tv_ Shows",
   },
   {
     name: "COUNTRIES",
-    type: "countries",
+    type: "Countries",
   },
   {
     name: "CAPITAL CITIES",
-    type: "capital_cities",
+    type: "Capital Cities",
   },
   {
     name: "ANIMALS",
-    type: "animals",
+    type: "Animals",
   },
   {
     name: "SPORTS",
-    type: "sports",
+    type: "Sports",
   },
 ];
 
