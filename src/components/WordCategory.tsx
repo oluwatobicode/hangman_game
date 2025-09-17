@@ -8,7 +8,7 @@ const categories = [
   },
   {
     name: "TV SHOWS",
-    type: "Tv_ Shows",
+    type: "TV Shows",
   },
   {
     name: "COUNTRIES",

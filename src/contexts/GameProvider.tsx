@@ -44,7 +44,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   >("setup");
 
   console.log(wordData);
-  console.log(category.toLocaleUpperCase());
+  console.log(category);
 
   console.log("Navbar render - gameStatus:", gameStatus);
   console.log("Navbar render - showMenu:", showMenu);
@@ -105,21 +105,32 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     reduceHealthPoints(10, letter, secretWord);
   };
 
-  // Effect for category selection - reset guessed letters when category changes
   useEffect(() => {
     if (!category) return;
 
-    // Reset guessed letters when selecting a new category
     setGuessedLetters([]);
     setPlayerHealth(maxPlayerHealth);
 
     const formatCategoryName = (categoryName: string) => {
+      const acronyms = ["TV"];
+
       return categoryName
         .toLowerCase()
         .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => {
+          const upperWord = word.toUpperCase();
+          if (acronyms.includes(upperWord)) {
+            return upperWord;
+          }
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
         .join(" ");
     };
+
+    // Examples:
+    console.log(formatCategoryName("MOVIES")); // Movies
+    console.log(formatCategoryName("TV SHOWS")); // TV Shows
+    console.log(formatCategoryName("AI TOOLS")); // AI Tools
 
     const getRandomWordFromCategory = (categoryName: string): string | null => {
       const categoryData =
@@ -135,6 +146,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
     // format the category
     const formattedCategory = formatCategoryName(category);
+    console.log("Hi i am here:", formattedCategory);
 
     // get a random word
     const randomWord = getRandomWordFromCategory(formattedCategory);
