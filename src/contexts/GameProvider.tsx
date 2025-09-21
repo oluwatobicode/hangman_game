@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -27,7 +28,7 @@ interface GameState {
   setPlayerHealth: Dispatch<SetStateAction<number>>;
   maxPlayerHealth: number;
   handleAlphabetClick: (letter: string) => void;
-  resetGame: () => void; // Added reset function
+  resetGame: () => void;
   gameState: {};
 }
 
@@ -50,6 +51,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const maxPlayerHealth = 100;
   const initialGameState = loadState();
 
+  // Add a ref to track if we're initializing from localStorage
+  const isInitializingRef = useRef(true);
+  const hasLoadedFromStorageRef = useRef(!!initialGameState);
+
   const [secretWord, setSecretWord] = useState<string>(
     initialGameState?.secretWord || ""
   );
@@ -69,11 +74,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     "playing" | "won" | "lost" | "paused" | "setup"
   >(initialGameState?.gameStatus || "setup");
 
-  // keep everything in localStorage
-
   console.log(wordData);
   console.log(category);
-
   console.log("Navbar render - gameStatus:", gameStatus);
   console.log("Navbar render - showMenu:", showMenu);
 
@@ -86,26 +88,25 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setShowMenu(false);
     setGameStatus("setup");
     localStorage.removeItem("Hangman-game-state");
+    hasLoadedFromStorageRef.current = false;
   };
 
-  // this is checking IF THE WORD IS GUESSED COMPLETELY
+  // Check if the word is guessed completely
   const checkIsWordGuessed = (
     word: string,
     guessedLetters: string[]
   ): boolean => {
-    // this is getting all unique letters in the secret word (excluding spaces)
     const wordLetters = word
       .toLowerCase()
       .split("")
       .filter((letter) => letter !== " ");
 
-    // this is to check if every letter in the word has been guessed
     return wordLetters.every((letter) =>
       guessedLetters.some((guessed) => guessed.toLowerCase() === letter)
     );
   };
 
-  // reducing the health points of the player
+  // Reduce the health points of the player
   const reduceHealthPoints = (
     points: number,
     letter: string,
@@ -120,7 +121,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // handle alphabet clicked
+  // Handle alphabet clicked
   const handleAlphabetClick = (letter: string) => {
     if (gameStatus !== "playing") return;
 
@@ -134,7 +135,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     reduceHealthPoints(10, letter, secretWord);
   };
 
+  // Save to localStorage - only after initialization is complete
   useEffect(() => {
+    // Don't save during initial render or if we haven't finished initializing
+    if (isInitializingRef.current) {
+      return;
+    }
+
     const gameState = {
       secretWord,
       category,
@@ -146,6 +153,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       localStorage.setItem("Hangman-game-state", JSON.stringify(gameState));
+      console.log("Saved to localStorage:", gameState);
     } catch (error) {
       console.log("The error is here:", error);
     }
@@ -161,8 +169,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!category) return;
 
-    setGuessedLetters([]);
-    setPlayerHealth(maxPlayerHealth);
+    if (
+      !hasLoadedFromStorageRef.current ||
+      (hasLoadedFromStorageRef.current && !secretWord)
+    ) {
+      setGuessedLetters([]);
+      setPlayerHealth(maxPlayerHealth);
+    }
 
     const formatCategoryName = (categoryName: string) => {
       const acronyms = ["TV"];
@@ -180,11 +193,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         .join(" ");
     };
 
-    // Examples:
-    console.log(formatCategoryName("MOVIES")); // Movies
-    console.log(formatCategoryName("TV SHOWS")); // TV Shows
-    console.log(formatCategoryName("AI TOOLS")); // AI Tools
-
     const getRandomWordFromCategory = (categoryName: string): string | null => {
       const categoryData =
         wordData.categories[categoryName as keyof typeof wordData.categories];
@@ -197,21 +205,20 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       return categoryData[randomIndex].name;
     };
 
-    // format the category
-    const formattedCategory = formatCategoryName(category);
-    console.log("Hi i am here:", formattedCategory);
+    if (!secretWord || secretWord.trim() === "") {
+      const formattedCategory = formatCategoryName(category);
+      console.log("Formatted category:", formattedCategory);
 
-    // get a random word
-    const randomWord = getRandomWordFromCategory(formattedCategory);
+      const randomWord = getRandomWordFromCategory(formattedCategory);
 
-    if (randomWord) {
-      setSecretWord(randomWord);
+      if (randomWord) {
+        setSecretWord(randomWord);
+      }
     }
-  }, [category, maxPlayerHealth]);
+  }, [category, maxPlayerHealth, secretWord]);
 
   useEffect(() => {
     if (gameStatus !== "playing") return;
-
     if (!secretWord || secretWord.trim() === "") return;
 
     if (checkIsWordGuessed(secretWord, guessedLetters)) {
@@ -227,10 +234,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [playerHealth, gameStatus]);
 
-  // Simplified setup effect - only reset when explicitly needed
   useEffect(() => {
-    if (gameStatus === "setup") {
-      // Only reset if we're not coming from a category selection
+    if (gameStatus === "setup" && !hasLoadedFromStorageRef.current) {
       if (!category) {
         setPlayerHealth(maxPlayerHealth);
         setGuessedLetters([]);
@@ -241,34 +246,24 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [gameStatus, maxPlayerHealth, category]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      isInitializingRef.current = false;
+      hasLoadedFromStorageRef.current = false;
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const displaySecretWord = secretWord.split("").map((letter) => {
     if (letter === " ") return " ";
-    console.log(guessedLetters);
     const isGuessed = guessedLetters.some(
       (guessedLetter) => guessedLetter.toLowerCase() === letter.toLowerCase()
     );
     return isGuessed ? letter : "_";
   });
 
-  console.log(displaySecretWord);
-
-  // This is the section for storing the local-storage
-  // localStorage.setItem("Hangman-game-state", JSON.stringify(gameState));
-  // localStorage.setItem("maxPlayerHealth", "100");
-
-  // const savedProgressString = localStorage.getItem("Hangman-game-state");
-
-  // if (savedProgressString) {
-  //   const loadedGameState = JSON.parse(savedProgressString);
-  //   console.log("This is the saved game state:", loadedGameState);
-  // }
-
-  // const yourHealth = localStorage.getItem("maxPlayerHealth");
-
-  // if (yourHealth) {
-  //   const savedPlayerHealth = localStorage.getItem("maxPlayerHealth");
-  //   console.log("This is your health:", savedPlayerHealth);
-  // }
+  console.log("Display secret word:", displaySecretWord);
 
   const gameState = {
     secretWord,

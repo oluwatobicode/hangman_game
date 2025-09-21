@@ -57,7 +57,9 @@ const createBalancedColumns = (words: string[]) => {
 };
 
 const DisplayWord = () => {
-  const { secretWord, displaySecretWord } = useGameContext();
+  const { secretWord, displaySecretWord, gameState } = useGameContext();
+
+  console.log("this is the game-state from the local-storage", gameState);
 
   const words = secretWord.split(" ");
   const [row1Words, row2Words] = createBalancedColumns(words);

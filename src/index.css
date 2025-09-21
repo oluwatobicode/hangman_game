@@ -4,6 +4,8 @@ body {
   font-family: "Mouse Memoirs", sans-serif;
 }
 
+@custom-variant hover (&:hover);
+
 @layer utilities {
   .text-stroke {
     -webkit-text-stroke: 4px #243041;
@@ -15,5 +17,3 @@ body {
     }
   }
 }
-
-@custom-variant hover (&:hover);

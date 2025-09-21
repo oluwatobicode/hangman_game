@@ -51,7 +51,7 @@ const WordCategory = () => {
           <div className="flex flex-row items-center justify-between mb-8 w-full max-w-6xl">
             <button
               onClick={handleGoBack}
-              className="shadow-[inset_0px_-5px_0px_-1px_#9D2DF5] bg-gradient-to-b from-[#FE71FE] to-[#7199FF] w-[40px] h-[40px] md:w-[64px] md:h-[64px] lg:w-[94px] lg:h-[94px] rounded-full flex items-center justify-center cursor-pointer"
+              className="shadow-[inset_0px_-5px_0px_-1px_#9D2DF5]  bg-gradient-to-b from-[#FE71FE] to-[#7199FF] w-[40px] h-[40px] md:w-[64px] md:h-[64px] lg:w-[94px] lg:h-[94px] rounded-full flex items-center justify-center cursor-pointer"
             >
               <img
                 src="/images/icon-back.svg"
@@ -72,7 +72,7 @@ const WordCategory = () => {
               <button
                 key={i}
                 onClick={() => handleCategoryClick(el.name)}
-                className="text-white text-[24px] md:text-[48px] tracking-[5%] leading-[120%] cursor-pointer transition-all duration-200 font-normal bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] lg:w-[384px] lg:h-[190px] md:w-full md:h-[182.67px] w-full h-[77px] md:rounded-[40px] rounded-[20px]"
+                className="text-white text-[24px] md:text-[48px] hover:bg-white/45 tracking-[5%] leading-[120%] cursor-pointer transition-all duration-200 font-normal bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] lg:w-[384px] lg:h-[190px] md:w-full md:h-[182.67px] w-full h-[77px] md:rounded-[40px] rounded-[20px]"
               >
                 {el.name}
               </button>
