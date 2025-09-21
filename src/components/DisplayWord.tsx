@@ -34,6 +34,7 @@ const createBalancedColumns = (words: string[]) => {
   let currentRowChars = 0;
   let row1: string[] = [];
   let row2: string[] = [];
+  // let row3: string[] = [];
 
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
@@ -98,7 +99,7 @@ const DisplayWord = () => {
       </div>
 
       {row2Words.length > 0 && (
-        <div className="flex items-center justify-center lg:gap-[16px] md:gap-[10px] gap-[8px]">
+        <div className="flex items-center justify-center lg:gap-[16px] md:gap-[10px] gap-[8px] ">
           {renderLetters(row2Display)}
         </div>
       )}

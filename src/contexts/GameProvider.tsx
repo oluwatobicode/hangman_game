@@ -28,20 +28,48 @@ interface GameState {
   maxPlayerHealth: number;
   handleAlphabetClick: (letter: string) => void;
   resetGame: () => void; // Added reset function
+  gameState: {};
 }
 
 const GameContext = createContext<GameState | undefined>(undefined);
 
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem("Hangman-game-state");
+    if (serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (error) {
+    console.error("Could not load state from local storage");
+    return undefined;
+  }
+};
+
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const maxPlayerHealth = 100;
-  const [secretWord, setSecretWord] = useState<string>("");
-  const [category, setSelectedCategory] = useState<string>("");
-  const [guessedLetters, setGuessedLetters] = useState<Array<string>>([]);
-  const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [playerHealth, setPlayerHealth] = useState<number>(maxPlayerHealth);
+  const initialGameState = loadState();
+
+  const [secretWord, setSecretWord] = useState<string>(
+    initialGameState?.secretWord || ""
+  );
+  const [category, setSelectedCategory] = useState<string>(
+    initialGameState?.category || ""
+  );
+  const [guessedLetters, setGuessedLetters] = useState<Array<string>>(
+    initialGameState?.guessedLetters || []
+  );
+  const [showMenu, setShowMenu] = useState<boolean>(
+    initialGameState?.showMenu || false
+  );
+  const [playerHealth, setPlayerHealth] = useState<number>(
+    initialGameState?.playerHealth || maxPlayerHealth
+  );
   const [gameStatus, setGameStatus] = useState<
     "playing" | "won" | "lost" | "paused" | "setup"
-  >("setup");
+  >(initialGameState?.gameStatus || "setup");
+
+  // keep everything in localStorage
 
   console.log(wordData);
   console.log(category);
@@ -57,6 +85,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setSelectedCategory("");
     setShowMenu(false);
     setGameStatus("setup");
+    localStorage.removeItem("Hangman-game-state");
   };
 
   // this is checking IF THE WORD IS GUESSED COMPLETELY
@@ -104,6 +133,30 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setGuessedLetters((prevLetter) => [...prevLetter, letter]);
     reduceHealthPoints(10, letter, secretWord);
   };
+
+  useEffect(() => {
+    const gameState = {
+      secretWord,
+      category,
+      guessedLetters,
+      showMenu,
+      playerHealth,
+      gameStatus,
+    };
+
+    try {
+      localStorage.setItem("Hangman-game-state", JSON.stringify(gameState));
+    } catch (error) {
+      console.log("The error is here:", error);
+    }
+  }, [
+    secretWord,
+    category,
+    guessedLetters,
+    showMenu,
+    playerHealth,
+    gameStatus,
+  ]);
 
   useEffect(() => {
     if (!category) return;
@@ -199,6 +252,33 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   console.log(displaySecretWord);
 
+  // This is the section for storing the local-storage
+  // localStorage.setItem("Hangman-game-state", JSON.stringify(gameState));
+  // localStorage.setItem("maxPlayerHealth", "100");
+
+  // const savedProgressString = localStorage.getItem("Hangman-game-state");
+
+  // if (savedProgressString) {
+  //   const loadedGameState = JSON.parse(savedProgressString);
+  //   console.log("This is the saved game state:", loadedGameState);
+  // }
+
+  // const yourHealth = localStorage.getItem("maxPlayerHealth");
+
+  // if (yourHealth) {
+  //   const savedPlayerHealth = localStorage.getItem("maxPlayerHealth");
+  //   console.log("This is your health:", savedPlayerHealth);
+  // }
+
+  const gameState = {
+    secretWord,
+    category,
+    guessedLetters,
+    showMenu,
+    playerHealth,
+    gameStatus,
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -218,6 +298,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         gameStatus,
         setGameStatus,
         resetGame,
+        gameState,
       }}
     >
       {children}
