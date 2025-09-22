@@ -27,8 +27,6 @@ interface GameState {
   handleAlphabetClick: (letter: string) => void;
 }
 
-type WordData = { name: string; selected: boolean; category: string };
-
 const GameContext = createContext<GameState | undefined>(undefined);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
