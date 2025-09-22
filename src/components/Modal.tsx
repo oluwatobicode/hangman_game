@@ -51,7 +51,7 @@ const Modal = () => {
         <div className="flex flex-col items-center justify-center gap-4 mt-10">
           {gameStatus === "paused" && (
             <motion.button
-              // onClick={handleContinue}
+              onClick={handleContinue}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.2 }}
