@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 
 const rules = [
   {
@@ -32,7 +33,10 @@ const Rules = () => {
       <div className="flex flex-col items-center justify-center relative z-10">
         <div className="flex justify-between items-center w-full max-w-6xl">
           <div className="">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
               onClick={handleGoBack}
               className="shadow-[inset_0px_-5px_0px_-1px_#9D2DF5] bg-linear-to-b from-[#FE71FE] to-[#7199FF] w-[40px] h-[40px] md:w-[64px] md:h-[64px] lg:w-[94px] lg:h-[94px] rounded-full flex items-center justify-center cursor-pointer"
             >
@@ -41,7 +45,7 @@ const Rules = () => {
                 className="w-[17.45px] h-[16.17px] md:w-[27.91px] md:h-[25.87px] lg:w-[41px] lg:h-[38px]"
                 alt="back-icon"
               />
-            </button>
+            </motion.button>
           </div>
 
           <h1 className="text-[48px] w-full text-center md:text-[104px] lg:text-[136px] font-medium  text-transparent leading-[120%] -tracking-[0.5%]">
@@ -52,10 +56,17 @@ const Rules = () => {
         </div>
 
         <div className="flex lg:flex-row flex-col gap-[25px] mt-5 w-full max-w-6xl">
-          {rules.map((el) => (
-            <div
-              key={el.id}
-              className="lg:w-[384px] lg:h-[520px] md:w-[680px] md:h-[200px] w-[324px] h-[185px] flex lg:flex-col md:flex-row items-center justify-center space-y-3 rounded-[40px] bg-white"
+          {rules.map((el, i) => (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: i * 0.1,
+                duration: 0.5,
+              }}
+              className="lg:w-[384px] cursor-pointer lg:h-[520px] md:w-[680px] md:h-[200px] w-[324px] h-[185px] flex lg:flex-col md:flex-row items-center justify-center space-y-3 rounded-[40px] bg-white"
             >
               <div className="text-center lg:space-y-4 p-4">
                 <div className="flex lg:flex-col items-center flex-row gap-[16px] md:hidden">
@@ -68,12 +79,22 @@ const Rules = () => {
                 </div>
 
                 <div className="hidden lg:flex lg:flex-col items-center gap-[16px]">
-                  <h1 className="lg:text-[88px] text-[24px] leading-[120%] text-[#2463FF]">
+                  <motion.h1
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: i * 0.1 + 0.3, type: "spring" }}
+                    className="lg:text-[88px] text-[24px] leading-[120%] text-[#2463FF]"
+                  >
                     0{el.id}
-                  </h1>
-                  <h1 className="lg:text-[48px] md:text-[40px] text-[24px] text-[#261676]">
+                  </motion.h1>
+                  <motion.h1
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="lg:text-[48px] md:text-[40px] text-[24px] text-[#261676]"
+                  >
                     {el.name}
-                  </h1>
+                  </motion.h1>
                 </div>
 
                 <div className="hidden md:flex lg:hidden items-center gap-[16px]">
@@ -95,7 +116,7 @@ const Rules = () => {
                   {el.rule}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

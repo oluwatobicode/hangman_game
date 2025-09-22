@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useGameContext } from "../contexts/GameProvider";
 import Modal from "./Modal";
 
@@ -27,8 +28,10 @@ const Navbar = () => {
   return (
     <nav className="w-full flex items-center">
       <div className="flex mt-5 items-center justify-center mr-auto gap-[16px] md:gap-[32px] lg:gap-[57px]">
-        <button
+        <motion.button
           onClick={toggleMenu}
+          whileHover={{ scale: 0.8 }}
+          whileTap={{ scale: 0.8 }}
           className="cursor-pointer w-[40px] h-[40px] md:w-[64px] md:h-[64px] lg:w-[94px] lg:h-[94px] flex items-center justify-center rounded-full shadow-[inset_0_-6px_0_7px_rgba(157,45,245,0.25)] bg-gradient-to-b from-[#FE71FE] to-[#7199FF]"
         >
           <img
@@ -36,7 +39,7 @@ const Navbar = () => {
             src="/images/icon-menu.svg"
             alt="menu icon"
           />
-        </button>
+        </motion.button>
 
         <h1 className="lg:text-[88px] md:text-[48px] text-[40px] md:tracking-[5%] leading-[-0.5%] md:leading-[120%] text-white">
           {category}
@@ -60,9 +63,11 @@ const Navbar = () => {
         </div>
       </div>
 
-      {(gameStatus === "won" ||
-        gameStatus === "lost" ||
-        gameStatus === "paused") && <Modal />}
+      <AnimatePresence initial={false}>
+        {(gameStatus === "won" ||
+          gameStatus === "lost" ||
+          gameStatus === "paused") && <Modal />}
+      </AnimatePresence>
     </nav>
   );
 };

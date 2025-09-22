@@ -10,6 +10,7 @@ A modern implementation of the classic Hangman word guessing game built with Rea
 - Modern UI with smooth animations
 - Game rules section
 - Score tracking
+- Local-storage to store user game state when page-reloads
 
 ## 🛠️ Technologies Used
 
@@ -18,6 +19,7 @@ A modern implementation of the classic Hangman word guessing game built with Rea
 - Vite
 - TailwindCSS
 - React Router
+- Framer Motion
 
 ## 🚀 Getting Started
 

@@ -1,5 +1,5 @@
 import { useGameContext } from "../contexts/GameProvider";
-
+import { motion } from "framer-motion";
 /* 
   Option B: Smart Word Distribution
 1 words - keep like this
@@ -84,11 +84,21 @@ const DisplayWord = () => {
         )}
 
         {el !== "_" && el !== " " && (
-          <div className="shadow-[inset_0_-2px_0_3px_#140E66,inset_0_1px_0_6px_#3C74FF] lg:w-[112px] lg:h-[128px] md:w-[86.66px] md:h-[112px] w-[40px] h-[66px] lg:rounded-[40px] md:rounded-[32px] rounded-[12px] flex items-center justify-center bg-[#2463FF]">
+          <motion.div
+            initial={{ scale: 0, y: -20 }}
+            animate={{ scale: 1, y: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              bounceDamping: 20,
+              duration: 0.6,
+            }}
+            className="shadow-[inset_0_-2px_0_3px_#140E66,inset_0_1px_0_6px_#3C74FF] lg:w-[112px] lg:h-[128px] md:w-[86.66px] md:h-[112px] w-[40px] h-[66px] lg:rounded-[40px] md:rounded-[32px] rounded-[12px] flex items-center justify-center bg-[#2463FF]"
+          >
             <h1 className="text-white text-[40px] md:text-[64px] lg:text-[88px] leading-[120%] tracking-[5%]">
               {el}
             </h1>
-          </div>
+          </motion.div>
         )}
       </div>
     ));
