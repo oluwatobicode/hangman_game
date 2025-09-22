@@ -29,7 +29,7 @@ const GameBoard = () => {
             disabled={guessedLetters.some(
               (guessed) => guessed.toLowerCase() === el.toLowerCase()
             )}
-            whileTap={{ scale: 0.2 }}
+            // whileTap={{ scale: 0.2 }}
             whileHover={{ scale: 1.2, transition: { duration: 0.2 } }}
             onClick={() => handleAlphabetClick(el)}
             className="lg:w-[109px] lg:h-[84px] md:w-[64px] md:h-[84px] w-[28.89px] h-[56px] md:rounded-[24px] rounded-[8px] bg-white hover:bg-[#2463FF] hover:text-white transform transition-colors duration-300 text-[#261676] md:text-[48px] text-[24px] cursor-pointer font-normal disabled:cursor-not-allowed disabled:opacity-[25%]"
