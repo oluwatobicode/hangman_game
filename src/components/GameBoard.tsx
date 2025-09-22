@@ -19,7 +19,6 @@ const GameBoard = () => {
 
   console.log(secretWordMap);
 
-  console.log(guessedLetters);
   console.log(displaySecretWord);
 
   return (

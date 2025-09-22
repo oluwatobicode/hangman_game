@@ -1,29 +1,7 @@
 import { useGameContext } from "../contexts/GameProvider";
 import { motion } from "framer-motion";
-/* 
-  Option B: Smart Word Distribution
-1 words - keep like this
-2 words - break one up and below down
-3 words - 2 words on top and 2 words below
-5 words → 3 words top, 2 words bottom
-6 words → 3 words per row
-7 words → 4 words top, 3 words bottom
-8 words → 4 words per row
-  */
+import { useEffect, useState } from "react";
 
-/* 
-  Strategy A: Even Split
-
-2 words → 1 word per row
-3 words → 2 words first row, 1 word second row
-4 words → 2 words per row
-5+ words → distribute as evenly as possible
-
-Split displaySecretWord back into words
-Group words into rows using your chosen strategy
-Render each row as a separate flex/grid container
-Each word within a row flows naturally
-  */
 const createBalancedColumns = (words: string[]) => {
   console.log("debugging here:", words);
   const totalChars = words.join(" ").length;
@@ -34,17 +12,12 @@ const createBalancedColumns = (words: string[]) => {
   let currentRowChars = 0;
   let row1: string[] = [];
   let row2: string[] = [];
-  // let row3: string[] = [];
 
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
-    //   this is for adding spaces if not first word in row
     const charsToAdd = word.length + (currentRowChars > 0 ? 1 : 0);
 
-    // if adding this word would make row1 longer than row2,
-    // put it and remaining words in row2
     if (currentRowChars > 0 && currentRowChars + charsToAdd > targetRows + 2) {
-      // this puts the remaining word in row2
       row2 = words.slice(i);
       break;
     }
@@ -58,29 +31,94 @@ const createBalancedColumns = (words: string[]) => {
 
 const DisplayWord = () => {
   const { secretWord, displaySecretWord, gameState } = useGameContext();
+  const [screenSize, setScreenSize] = useState("lg");
+
+  useEffect(() => {
+    const updateScreenSize = () => {
+      const width = window.innerWidth;
+      if (width < 768) setScreenSize("sm");
+      else if (width < 1024) setScreenSize("md");
+      else setScreenSize("lg");
+    };
+
+    updateScreenSize();
+    window.addEventListener("resize", updateScreenSize);
+    return () => window.removeEventListener("resize", updateScreenSize);
+  }, []);
 
   console.log("this is the game-state from the local-storage", gameState);
 
   const words = secretWord.split(" ");
   const [row1Words, row2Words] = createBalancedColumns(words);
 
-  //   calculate where to split the display secret word array
   const row1Length = row1Words.join(" ").length;
-
-  // split display secret word into tow arrays
   const row1Display = displaySecretWord.slice(0, row1Length);
-  const row2Display = displaySecretWord.slice(row1Length + 1); // +1 to skip the space
+  const row2Display = displaySecretWord.slice(row1Length + 1);
 
   console.log("ROW 1 IS HERE:", row1Display);
   console.log("ROW 2 IS HERE:", row2Display);
 
-  const renderLetters = (letterArray: string[]) => {
+  const getResponsiveSizes = (rowDisplay: string[]) => {
+    const letterCount = rowDisplay.filter((el) => el !== " ").length;
+    const screenWidth = window.innerWidth;
+    const availableWidth = screenWidth * 0.9;
+
+    let letterWidth, letterHeight, gap, fontSize, borderRadius;
+
+    if (screenSize === "lg") {
+      letterWidth = Math.min(
+        112,
+        (availableWidth - (letterCount - 1) * 16) / letterCount
+      );
+      letterHeight = Math.min(128, letterWidth * 1.14);
+      gap = 16;
+      fontSize = Math.min(88, letterWidth * 0.78);
+      borderRadius = Math.min(40, letterWidth * 0.36);
+    } else if (screenSize === "md") {
+      letterWidth = Math.min(
+        86.66,
+        (availableWidth - (letterCount - 1) * 12) / letterCount
+      );
+      letterHeight = Math.min(112, letterWidth * 1.29);
+      gap = 12;
+      fontSize = Math.min(64, letterWidth * 0.74);
+      borderRadius = Math.min(32, letterWidth * 0.37);
+    } else {
+      letterWidth = Math.min(
+        40,
+        (availableWidth - (letterCount - 1) * 8) / letterCount
+      );
+      letterHeight = Math.min(66, letterWidth * 1.65);
+      gap = 8;
+      fontSize = Math.min(40, letterWidth * 1);
+      borderRadius = Math.min(12, letterWidth * 0.3);
+    }
+
+    return {
+      letterWidth: Math.max(letterWidth, 24),
+      letterHeight: Math.max(letterHeight, 32),
+      gap: Math.max(gap, 4),
+      fontSize: Math.max(fontSize, 16),
+      borderRadius: Math.max(borderRadius, 6),
+    };
+  };
+
+  const renderLetters = (letterArray: string[], rowIndex: number) => {
+    const sizes = getResponsiveSizes(letterArray);
+
     return letterArray.map((el, i) => (
-      <div key={i}>
+      <div key={`${rowIndex}-${i}`}>
         {el === " " && " "}
 
         {el === "_" && (
-          <div className="shadow-[inset_0_-2px_0_3px_#140E66,inset_0_1px_0_6px_#3C74FF] lg:w-[112px] lg:h-[128px] md:w-[86.66px] md:h-[112px] w-[40px] h-[66px] lg:rounded-[40px] md:rounded-[32px] rounded-[12px] flex items-center justify-center bg-[#2463FF] opacity-25"></div>
+          <div
+            className="shadow-[inset_0_-2px_0_3px_#140E66,inset_0_1px_0_6px_#3C74FF] flex items-center justify-center bg-[#2463FF] opacity-25"
+            style={{
+              width: `${sizes.letterWidth}px`,
+              height: `${sizes.letterHeight}px`,
+              borderRadius: `${sizes.borderRadius}px`,
+            }}
+          ></div>
         )}
 
         {el !== "_" && el !== " " && (
@@ -93,9 +131,17 @@ const DisplayWord = () => {
               bounceDamping: 20,
               duration: 0.6,
             }}
-            className="shadow-[inset_0_-2px_0_3px_#140E66,inset_0_1px_0_6px_#3C74FF] lg:w-[112px] lg:h-[128px] md:w-[86.66px] md:h-[112px] w-[40px] h-[66px] lg:rounded-[40px] md:rounded-[32px] rounded-[12px] flex items-center justify-center bg-[#2463FF]"
+            className="shadow-[inset_0_-2px_0_3px_#140E66,inset_0_1px_0_6px_#3C74FF] flex items-center justify-center bg-[#2463FF]"
+            style={{
+              width: `${sizes.letterWidth}px`,
+              height: `${sizes.letterHeight}px`,
+              borderRadius: `${sizes.borderRadius}px`,
+            }}
           >
-            <h1 className="text-white text-[40px] md:text-[64px] lg:text-[88px] leading-[120%] tracking-[5%]">
+            <h1
+              className="text-white leading-[120%] tracking-[5%]"
+              style={{ fontSize: `${sizes.fontSize}px` }}
+            >
               {el}
             </h1>
           </motion.div>
@@ -104,15 +150,25 @@ const DisplayWord = () => {
     ));
   };
 
+  const row1Sizes = getResponsiveSizes(row1Display);
+  const row2Sizes =
+    row2Words.length > 0 ? getResponsiveSizes(row2Display) : row1Sizes;
+
   return (
-    <div className="flex flex-col items-center justify-center md:gap-[16px] gap-[12px]">
-      <div className="flex items-center justify-center lg:gap-[16px] md:gap-[12px] gap-[8px]">
-        {renderLetters(row1Display)}
+    <div className="flex flex-col items-center justify-center gap-3">
+      <div
+        className="flex items-center justify-center"
+        style={{ gap: `${row1Sizes.gap}px` }}
+      >
+        {renderLetters(row1Display, 0)}
       </div>
 
       {row2Words.length > 0 && (
-        <div className="flex items-center justify-center lg:gap-[16px] md:gap-[10px] gap-[8px] ">
-          {renderLetters(row2Display)}
+        <div
+          className="flex items-center justify-center"
+          style={{ gap: `${row2Sizes.gap}px` }}
+        >
+          {renderLetters(row2Display, 1)}
         </div>
       )}
     </div>
