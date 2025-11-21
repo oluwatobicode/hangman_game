@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useGameContext } from "../contexts/GameProvider";
 import Modal from "./Modal";
+import { useGame } from "../contexts/GameProviderFinal";
 
 const Navbar = () => {
   const {
@@ -12,6 +13,10 @@ const Navbar = () => {
     gameStatus,
     setGameStatus,
   } = useGameContext();
+
+  const { state } = useGame();
+
+  console.log(state.category);
 
   const toggleMenu = () => {
     if (!showMenu && gameStatus === "playing") {

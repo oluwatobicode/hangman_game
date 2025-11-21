@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import wordData from "../data/data.json";
 
 import {
@@ -9,6 +10,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
+import api from "../api/axiosInstance";
 
 interface GameState {
   displaySecretWord: string[];
@@ -29,9 +31,28 @@ interface GameState {
   maxPlayerHealth: number;
   handleAlphabetClick: (letter: string) => void;
   resetGame: () => void;
-  gameState: {};
 }
 
+interface StartGame {
+  category: string;
+}
+
+interface EndGame {
+  won: boolean;
+  usedHint: boolean;
+  wrongGuesses: string | number;
+  duration: string | number;
+  gameData: {
+    _id: string;
+    word: string;
+    category: string;
+    hint: string;
+    difficulty: string;
+    length: number;
+  };
+}
+
+type GameActions = { type: "GAME-START" } | { type: "GAME-END" };
 const GameContext = createContext<GameState | undefined>(undefined);
 
 const loadState = () => {
@@ -42,12 +63,21 @@ const loadState = () => {
     }
     return JSON.parse(serializedState);
   } catch (error) {
-    console.error("Could not load state from local storage");
+    // console.log(error);
+    // console.error("Could not load state from local storage");
     return undefined;
   }
 };
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ["category"],
+  //   queryFn: async () => {
+  //     const response = await api.get("/game/start", {});
+  //     return response.data;
+  //   },
+  // });
+
   const maxPlayerHealth = 100;
   const initialGameState = loadState();
 
@@ -59,7 +89,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     initialGameState?.secretWord || ""
   );
   const [category, setSelectedCategory] = useState<string>(
-    initialGameState?.category || ""
+    initialGameState?.category || "movies"
   );
   const [guessedLetters, setGuessedLetters] = useState<Array<string>>(
     initialGameState?.guessedLetters || []
@@ -74,10 +104,32 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     "playing" | "won" | "lost" | "paused" | "setup"
   >(initialGameState?.gameStatus || "setup");
 
-  console.log(wordData);
-  console.log(category);
-  console.log("Navbar render - gameStatus:", gameStatus);
-  console.log("Navbar render - showMenu:", showMenu);
+  // console.log(wordData);
+  // console.log(category);
+  // console.log("Navbar render - gameStatus:", gameStatus);
+  // console.log("Navbar render - showMenu:", showMenu);
+
+  // const { data: random, isLoading: isSearching } = useQuery({
+  //   queryKey: ["category"],
+  //   queryFn: async () => {
+  //     const response = await api.get("/game/start", {
+  //       category: category,
+  //     });
+  //     return response.data;
+  //   },
+  // });
+
+  // console.log(random);
+
+  // const test = category.toLowerCase();
+
+  // const response = await api.get("/game/start", {
+  //   params: { categtory },
+  // });
+
+  // console.log(response.data);
+
+  // console.log(randomWord());
 
   // Function to reset all game state
   const resetGame = () => {
@@ -153,9 +205,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       localStorage.setItem("Hangman-game-state", JSON.stringify(gameState));
-      console.log("Saved to localStorage:", gameState);
+      // console.log("Saved to localStorage:", gameState);
     } catch (error) {
-      console.log("The error is here:", error);
+      // console.log("The error is here:", error);
     }
   }, [
     secretWord,
@@ -207,7 +259,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (!secretWord || secretWord.trim() === "") {
       const formattedCategory = formatCategoryName(category);
-      console.log("Formatted category:", formattedCategory);
+      // console.log("Formatted category:", formattedCategory);
 
       const randomWord = getRandomWordFromCategory(formattedCategory);
 
@@ -263,7 +315,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     return isGuessed ? letter : "_";
   });
 
-  console.log("Display secret word:", displaySecretWord);
+  // console.log("Display secret word:", displaySecretWord);
 
   const gameState = {
     secretWord,

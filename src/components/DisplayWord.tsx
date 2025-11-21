@@ -1,13 +1,15 @@
 import { useGameContext } from "../contexts/GameProvider";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useGame } from "../contexts/GameProviderFinal";
+import { useParams } from "react-router";
 
 const createBalancedColumns = (words: string[]) => {
-  console.log("debugging here:", words);
+  // console.log("debugging here:", words);
   const totalChars = words.join(" ").length;
-  console.log("debugging here 2:", totalChars);
+  // console.log("debugging here 2:", totalChars);
   const targetRows = totalChars / 2;
-  console.log("target rows", targetRows);
+  // console.log("target rows", targetRows);
 
   let currentRowChars = 0;
   let row1: string[] = [];
@@ -46,7 +48,7 @@ const DisplayWord = () => {
     return () => window.removeEventListener("resize", updateScreenSize);
   }, []);
 
-  console.log("this is the game-state from the local-storage", gameState);
+  // console.log("this is the game-state from the local-storage", gameState);
 
   const words = secretWord.split(" ");
   const [row1Words, row2Words] = createBalancedColumns(words);
@@ -55,8 +57,8 @@ const DisplayWord = () => {
   const row1Display = displaySecretWord.slice(0, row1Length);
   const row2Display = displaySecretWord.slice(row1Length + 1);
 
-  console.log("ROW 1 IS HERE:", row1Display);
-  console.log("ROW 2 IS HERE:", row2Display);
+  // console.log("ROW 1 IS HERE:", row1Display);
+  // console.log("ROW 2 IS HERE:", row2Display);
 
   const getResponsiveSizes = (rowDisplay: string[]) => {
     const letterCount = rowDisplay.filter((el) => el !== " ").length;
@@ -102,6 +104,14 @@ const DisplayWord = () => {
       borderRadius: Math.max(borderRadius, 6),
     };
   };
+
+  const { state } = useGame();
+
+  const { category } = useParams();
+
+  console.log(category);
+
+  console.log("testing waters:", state);
 
   const renderLetters = (letterArray: string[], rowIndex: number) => {
     const sizes = getResponsiveSizes(letterArray);
