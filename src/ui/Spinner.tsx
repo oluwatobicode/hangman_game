@@ -1,7 +1,11 @@
 import "ldrs/ring";
 import { infinity } from "ldrs";
 
-const Spinner = () => {
+type SpinnerMessage = {
+  message: string;
+};
+
+const Spinner = ({ message }: SpinnerMessage) => {
   infinity.register();
 
   return (
@@ -16,7 +20,7 @@ const Spinner = () => {
       ></l-infinity>
 
       <h2 className="text-white text-xl md:text-2xl font-medium text-center max-w-md">
-        Hopefully you made it to the top 3 😎
+        {message}
       </h2>
     </div>
   );

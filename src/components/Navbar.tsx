@@ -2,10 +2,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useGameContext } from "../contexts/GameProvider";
 import Modal from "./Modal";
 import { useGame } from "../contexts/GameProviderFinal";
+import { useParams } from "react-router";
 
 const Navbar = () => {
   const {
-    category,
     showMenu,
     setShowMenu,
     playerHealth,
@@ -14,19 +14,21 @@ const Navbar = () => {
     setGameStatus,
   } = useGameContext();
 
+  const { category } = useParams();
+
   const { state } = useGame();
 
-  console.log(state.category);
-
   const toggleMenu = () => {
-    if (!showMenu && gameStatus === "playing") {
+    if (!state.showMenu && state.gameStatus === "playing") {
       setGameStatus("paused");
     }
     setShowMenu(!showMenu);
   };
 
   const healthPercentage =
-    maxPlayerHealth > 0 ? (playerHealth / maxPlayerHealth) * 100 : 0;
+    state.maxPlayerHealth > 0
+      ? (state.playerHealth / state.maxPlayerHealth) * 100
+      : 0;
 
   console.log(healthPercentage);
 
@@ -47,7 +49,8 @@ const Navbar = () => {
         </motion.button>
 
         <h1 className="lg:text-[88px] md:text-[48px] text-[40px] md:tracking-[5%] leading-[-0.5%] md:leading-[120%] text-white">
-          {category}
+          {category?.toUpperCase().split("-").join(" ")}
+          {/* {category} */}
         </h1>
       </div>
 

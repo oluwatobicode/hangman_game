@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router";
 
 import Start from "./pages/Start";
 import Rules from "./components/Rules";
-import Games from "./pages/Game";
 import WordCategory from "./components/WordCategory";
 import GameProvider from "./contexts/GameProvider";
 import Login from "./pages/Login";
@@ -11,6 +10,8 @@ import { AuthProvider } from "./contexts/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Leaderboard from "./pages/Leaderboard";
 import GameProviderFinal from "./contexts/GameProviderFinal";
+import Profile from "./pages/Profile";
+import Play from "./components/Play";
 
 function App() {
   const queryClient = new QueryClient();
@@ -25,10 +26,11 @@ function App() {
                 <Route path="/" element={<Start />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/profile" element={<Profile />} />
 
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/category" element={<WordCategory />} />
-                <Route path="/category/game/:category" element={<Games />} />
+                <Route path="/category/game/:category" element={<Play />} />
 
                 <Route path="/rules" element={<Rules />} />
               </Routes>

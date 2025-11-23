@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router";
 import { useGameContext } from "../contexts/GameProvider";
 import { motion } from "framer-motion";
+import { useGame } from "../contexts/GameProviderFinal";
 
 const Modal = () => {
   const navigate = useNavigate();
   const { setShowMenu, gameStatus, resetGame, setGameStatus } =
     useGameContext();
+
+  const { state } = useGame();
 
   const quiteGame = () => {
     resetGame();
@@ -13,7 +16,7 @@ const Modal = () => {
   };
 
   const handleNewCategory = () => {
-    resetGame();
+    state.category = null;
     navigate("/category");
   };
 

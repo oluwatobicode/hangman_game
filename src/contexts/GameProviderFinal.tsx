@@ -46,7 +46,7 @@ type GameState = {
   gameStart: GameStart | null;
   gameEnd: GameEnd | null;
   category: string | null;
-  playerHealth: number | null;
+  playerHealth: number;
   maxPlayerHealth: number;
   guessedLetters: string[] | null;
   gameStatus: "paused" | "playing" | "won" | "lost" | "setup";

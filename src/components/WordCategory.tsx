@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router";
-import { useGameContext } from "../contexts/GameProvider";
 import { motion } from "framer-motion";
-import { useGame } from "../contexts/GameProviderFinal";
 
 const categories = [
   {
@@ -32,20 +30,13 @@ const categories = [
 
 const WordCategory = () => {
   const navigate = useNavigate();
-  const { gameStart } = useGame();
 
   const handleGoBack = () => {
     navigate("/");
   };
 
   const handleCategoryClick = (category: string) => {
-    // setSelectedCategory(category);
-    console.log(category);
-    gameStart({
-      category: category,
-    });
     navigate(`/category/game/${category}`);
-    // setGameStatus("playing");
   };
 
   return (
