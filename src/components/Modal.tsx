@@ -1,31 +1,24 @@
 import { useNavigate } from "react-router";
-import { useGameContext } from "../contexts/GameProvider";
 import { motion } from "framer-motion";
 import { useGame } from "../contexts/GameProviderFinal";
 
 const Modal = () => {
   const navigate = useNavigate();
-  const { setShowMenu, gameStatus, resetGame, setGameStatus } =
-    useGameContext();
-
-  const { state } = useGame();
+  const { state, showMenu, gameReset } = useGame();
 
   const quiteGame = () => {
-    resetGame();
+    gameReset();
     navigate("/");
   };
 
   const handleNewCategory = () => {
-    state.category = null;
+    gameReset();
     navigate("/category");
   };
 
   const handleContinue = () => {
     console.log("continue");
-    if (gameStatus === "paused") {
-      setShowMenu(false);
-      setGameStatus("playing");
-    }
+    showMenu(false);
   };
 
   return (
@@ -44,15 +37,15 @@ const Modal = () => {
         <div className="absolute md:-top-20 -top-14 w-full text-center">
           <h1 className="text-[94px] text-center md:text-[134px] lg:text-[134px] font-medium text-transparent leading-[120%] -tracking-[0.5%] flex-1">
             <span className="bg-gradient-to-b from-[#67B6FF] to-white bg-clip-text">
-              {gameStatus === "won" && "YOU WON!"}
-              {gameStatus === "lost" && "YOU LOSE!"}
-              {gameStatus === "paused" && "PAUSED"}
+              {state.gameStatus === "won" && "YOU WON!"}
+              {state.gameStatus === "lost" && "YOU LOSE!"}
+              {state.gameStatus === "paused" && "PAUSED"}
             </span>
           </h1>
         </div>
 
         <div className="flex flex-col items-center justify-center gap-4 mt-10">
-          {gameStatus === "paused" && (
+          {state.gameStatus === "paused" && (
             <motion.button
               onClick={handleContinue}
               whileHover={{ scale: 1.1 }}

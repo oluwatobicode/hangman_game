@@ -19,6 +19,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.66.0",
+    "react-hot-toast": "^2.6.0",
     "react-router": "^7.8.2",
     "tailwindcss": "^4.1.11",
     "tailwindcss-text-fill-stroke": "^2.0.0-beta.3"

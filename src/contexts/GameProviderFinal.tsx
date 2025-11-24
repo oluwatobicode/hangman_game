@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import api from "../api/axiosInstance";
 
 type GameStart = {
@@ -48,7 +48,7 @@ type GameState = {
   category: string | null;
   playerHealth: number;
   maxPlayerHealth: number;
-  guessedLetters: string[] | null;
+  guessedLetters: string[];
   gameStatus: "paused" | "playing" | "won" | "lost" | "setup";
   showMenu: boolean;
   secretWord: string | null;
@@ -66,12 +66,17 @@ type GameContextType = {
     secretWord: string
   ) => void;
   handleAlphabetClick: (letter: string) => void;
+  displaySecretWord: string;
+  showMenu: (mode: boolean) => void;
 };
 
 type GameActionType =
   | { type: "GAME_START"; payload: GameStart }
   | { type: "GAME_END"; payload: GameEnd }
+  | { type: "GUESS_LETTER"; payload: string }
   | { type: "REDUCE_HEALTH"; payload: number }
+  | { type: "SHOW_MENU"; payload: boolean }
+  | { type: "GAME_STATUS"; payload: string }
   | { type: "GAME_RESET"; payload: GameState };
 
 const initialGameState: GameState = {
@@ -99,6 +104,20 @@ const gameReducer = (state: GameState, action: GameActionType): GameState => {
         gameStart: action.payload,
         category: action.payload.category,
         secretWord: action.payload.word,
+        guessedLetters: [],
+      };
+
+    case "GUESS_LETTER":
+      return {
+        ...state,
+        guessedLetters: [...state.guessedLetters, action.payload],
+      };
+
+    case "SHOW_MENU":
+      return {
+        ...state,
+        showMenu: action.payload,
+        gameStatus: action.payload ? "paused" : "playing",
       };
 
     case "GAME_END":
@@ -196,10 +215,37 @@ export const GameProviderFinal = ({
     );
 
     if (checkIsGuessed) return;
+
+    dispatch({ type: "GUESS_LETTER", payload: letter });
+
+    if (state.secretWord) {
+      reduceHealthPoints(10, letter, state.secretWord);
+    }
   };
+
+  const displaySecretWord = useMemo(() => {
+    if (!state.secretWord) return " ";
+
+    return state.secretWord
+      .split("")
+      .map((char) => {
+        if (char === " ") return " ";
+
+        const isGuessed = state.guessedLetters.some(
+          (guessedLetter) => guessedLetter.toLowerCase() === char.toLowerCase()
+        );
+
+        return isGuessed ? char : "_";
+      })
+      .join("");
+  }, [state.secretWord, state.guessedLetters]);
 
   const gameReset = () => {
     dispatch({ type: "GAME_RESET", payload: initialGameState });
+  };
+
+  const showMenu = (mode: boolean) => {
+    dispatch({ type: "SHOW_MENU", payload: mode });
   };
 
   const value: GameContextType = {
@@ -210,6 +256,8 @@ export const GameProviderFinal = ({
     gameReset,
     gameStart,
     gameEnd,
+    displaySecretWord,
+    showMenu,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

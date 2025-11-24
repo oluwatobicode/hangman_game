@@ -1,28 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useGameContext } from "../contexts/GameProvider";
 import Modal from "./Modal";
 import { useGame } from "../contexts/GameProviderFinal";
 import { useParams } from "react-router";
 
 const Navbar = () => {
-  const {
-    showMenu,
-    setShowMenu,
-    playerHealth,
-    maxPlayerHealth,
-    gameStatus,
-    setGameStatus,
-  } = useGameContext();
-
   const { category } = useParams();
 
-  const { state } = useGame();
+  const { state, showMenu } = useGame();
+
+  console.log(state.showMenu);
 
   const toggleMenu = () => {
-    if (!state.showMenu && state.gameStatus === "playing") {
-      setGameStatus("paused");
-    }
-    setShowMenu(!showMenu);
+    showMenu(true);
   };
 
   const healthPercentage =
@@ -50,12 +39,11 @@ const Navbar = () => {
 
         <h1 className="lg:text-[88px] md:text-[48px] text-[40px] md:tracking-[5%] leading-[-0.5%] md:leading-[120%] text-white">
           {category?.toUpperCase().split("-").join(" ")}
-          {/* {category} */}
         </h1>
       </div>
 
       <div className="ml-auto flex items-center gap-[16px] md:gap-[40px]">
-        <div className="w-[57px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-full lg:h-[31px] rounded-[96px] bg-white">
+        <div className="w-[57px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-full lg:h-[31px]  rounded-[96px] bg-white">
           <div
             className="absolute lg:h-[13px] md:h-[13px] h-[8px] transform translate-y-1 translate-x-1 md:translate-y-2.5 md:translate-x-2.5 bg-[#261676] rounded-[96px] transition-all duration-300 ease-out"
             style={{ width: `${healthPercentage}%` }}
@@ -72,9 +60,9 @@ const Navbar = () => {
       </div>
 
       <AnimatePresence initial={false}>
-        {(gameStatus === "won" ||
-          gameStatus === "lost" ||
-          gameStatus === "paused") && <Modal />}
+        {(state.gameStatus === "won" ||
+          state.gameStatus === "lost" ||
+          state.gameStatus === "paused") && <Modal />}
       </AnimatePresence>
     </nav>
   );
