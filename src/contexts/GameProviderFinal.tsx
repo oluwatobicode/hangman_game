@@ -1,13 +1,19 @@
-import { createContext, useContext, useMemo, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from "react";
 import api from "../api/axiosInstance";
 
 type GameStart = {
-  _id: string;
-  word: string;
-  category: string;
-  hint: string;
-  difficulty: string;
-  length: number;
+  _id: string | undefined;
+  word: string | undefined;
+  category: string | undefined;
+  hint: string | undefined;
+  difficulty: string | undefined;
+  length: number | undefined;
 };
 
 type GameStartInput = {
@@ -15,26 +21,15 @@ type GameStartInput = {
 };
 
 type GameEndInput = {
-  won: string;
+  won: boolean;
   usedHint: boolean;
   wrongGuesses: number;
   duration: number;
   gameData: GameStart;
 };
 
-type GameStats = {
-  totalWins: number;
-  totalLoses: number;
-  currentStreak: number;
-  bestStreak: number;
-  winRate: number;
-};
-
 type GameEnd = {
-  stats: GameStats;
   newAchievements: [];
-  rank: number;
-  score: number;
   totalAchievements: number;
 };
 
@@ -49,7 +44,7 @@ type GameState = {
   playerHealth: number;
   maxPlayerHealth: number;
   guessedLetters: string[];
-  gameStatus: "paused" | "playing" | "won" | "lost" | "setup";
+  gameStatus: "paused" | "playing" | "won" | "lost" | "setup" | string;
   showMenu: boolean;
   secretWord: string | null;
 };
@@ -68,6 +63,7 @@ type GameContextType = {
   handleAlphabetClick: (letter: string) => void;
   displaySecretWord: string;
   showMenu: (mode: boolean) => void;
+  updateGameStatus: (mode: string) => void;
 };
 
 type GameActionType =
@@ -113,6 +109,12 @@ const gameReducer = (state: GameState, action: GameActionType): GameState => {
         guessedLetters: [...state.guessedLetters, action.payload],
       };
 
+    case "GAME_STATUS":
+      return {
+        ...state,
+        gameStatus: action.payload,
+      };
+
     case "SHOW_MENU":
       return {
         ...state,
@@ -121,7 +123,7 @@ const gameReducer = (state: GameState, action: GameActionType): GameState => {
       };
 
     case "GAME_END":
-      return { ...state };
+      return { ...state, gameEnd: action.payload };
 
     case "GAME_RESET":
       return { ...initialGameState };
@@ -156,7 +158,7 @@ export const GameProviderFinal = ({
 
       console.log(response.data.data);
 
-      const GameStart = {
+      const GameStartResponse = {
         _id: response.data.data.id,
         word: response.data.data.word,
         category: response.data.data.category,
@@ -165,7 +167,7 @@ export const GameProviderFinal = ({
         length: response.data.data.length,
       };
 
-      dispatch({ type: "GAME_START", payload: GameStart });
+      dispatch({ type: "GAME_START", payload: GameStartResponse });
     } catch (error) {
       console.log(error);
     }
@@ -173,10 +175,35 @@ export const GameProviderFinal = ({
   const gameEnd = async (gameEndInput: GameEndInput) => {
     try {
       const response = await api.post("/game/end", {
-        gameEndInput,
+        ...gameEndInput,
       });
 
-      return response.data;
+      console.log(response.data);
+
+      /* 
+      {
+    "status": "success",
+    "stats": {
+        "totalWins": 12,
+        "totalLoses": 8,
+        "currentStreak": 12,
+        "bestStreak": 12,
+        "winRate": 60
+    },
+    "newAchievements": [],
+    "rank": 1,
+    "score": 250,
+    "totalAchievements": 14
+}
+      */
+
+      const GameEndResponse = {
+        newAchievements: response.data?.newAchievements,
+        totalAchievements: response.data?.totalAchievements,
+      };
+
+      console.log(GameEndResponse);
+      dispatch({ type: "GAME_END", payload: GameEndResponse });
     } catch (error) {
       console.log(error);
     }
@@ -185,8 +212,8 @@ export const GameProviderFinal = ({
   const checkIsWordGuessed = (word: string, guessedLetters: string[]) => {
     const wordLetters = word
       .toLowerCase()
-      .split(" ")
-      .filter((letter) => letter !== "");
+      .split("")
+      .filter((letter) => letter !== " ");
 
     return wordLetters.every((letter) =>
       guessedLetters.some((guessed) => guessed.toLowerCase() === letter)
@@ -248,6 +275,58 @@ export const GameProviderFinal = ({
     dispatch({ type: "SHOW_MENU", payload: mode });
   };
 
+  const updateGameStatus = (mode: string) => {
+    dispatch({ type: "GAME_STATUS", payload: mode });
+  };
+
+  // checking if the user has won
+  useEffect(() => {
+    if (state.gameStatus !== "playing") return;
+
+    if (!state.secretWord || state.secretWord.trim() === "") return;
+
+    console.log(state.secretWord);
+
+    console.log(state.gameStatus);
+
+    if (checkIsWordGuessed(state.secretWord, state.guessedLetters)) {
+      updateGameStatus("won");
+    }
+  }, [state.guessedLetters, state.secretWord, state.gameStatus]);
+
+  // checking if the user has lost
+  useEffect(() => {
+    if (state.gameStatus !== "playing") return;
+
+    if (state.playerHealth <= 0) {
+      updateGameStatus("lost");
+    }
+  }, [state.playerHealth, state.gameStatus]);
+
+  // sending the data if the user has won or lost
+  useEffect(() => {
+    if (state.gameStatus !== "won" && state.gameStatus !== "lost") return;
+
+    const gameEndInput: GameEndInput = {
+      won: state.gameStatus === "won" ? true : false,
+      usedHint: false,
+      duration: state.duration || 0,
+      wrongGuesses: state.wrongGuesses || 0,
+      gameData: {
+        word: state.gameStart?.word,
+        _id: state.gameStart?._id,
+        category: state.gameStart?.category,
+        hint: state.gameStart?.hint,
+        difficulty: state.gameStart?.difficulty,
+        length: state.gameStart?.length,
+      },
+    };
+
+    console.log(gameEndInput);
+
+    gameEnd(gameEndInput);
+  }, [state.gameStatus]);
+
   const value: GameContextType = {
     state,
     checkIsWordGuessed,
@@ -258,6 +337,7 @@ export const GameProviderFinal = ({
     gameEnd,
     displaySecretWord,
     showMenu,
+    updateGameStatus,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
@@ -274,3 +354,14 @@ export const useGame = () => {
 };
 
 export default GameProviderFinal;
+
+/* next things to work on 
+1) tracking the following - [[
+- usedHint
+- duration
+- wrongGuesses
+]]
+2) sound effects for a when user wins
+3) difficulty level
+
+*/
