@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useAuth } from "../contexts/AuthProvider";
 import { motion } from "framer-motion";
+import { useLocation, useNavigate, Link } from "react-router";
+import toast from "react-hot-toast";
 
 type SignUpForm = {
   username: string;
@@ -19,91 +21,95 @@ const SignUpForm = () => {
   } = useForm<SignUpForm>();
 
   const { signUp } = useAuth();
-
   const checkPassword = watch("password", "");
-
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
-  const onSubmit: SubmitHandler<SignUpForm> = (data) => {
-    console.log(data);
-    signUp(data);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/category";
+
+  const onSubmit: SubmitHandler<SignUpForm> = async (data) => {
+    try {
+      await signUp(data);
+      toast.success("Account created! Let's play 🚀");
+      navigate(from, { replace: true });
+    } catch (error) {
+      console.log(error);
+      toast.error("Sign up failed. Try a different username.");
+    }
   };
 
   return (
-    <div className="shadow-[inset_0_6px_0_8px_#2463FF] h-[481px] w-[324px] md:w-[592px] max-h-full md:h-[500px] rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50">
-      <div className="shadow-[inset_0_-8px_0_4px_#140E66]  flex flex-col items-center justify-center max-h-full h-[481px] w-[324px] md:w-[592px] md:h-[500px] rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50">
-        <div className="absolute transform -translate-y-12 pt-5 top-0  md:-translate-y-20 md:translate-x-28 translate-x-17 -left-10 md:left-28">
+    <div className="shadow-[inset_0_6px_0_8px_#2463FF] min-h-[40px] md:min-h-full w-[90%] max-w-[350px] md:max-w-[592px] rounded-[40px] md:rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50 flex items-center justify-center ">
+      <div className="shadow-[inset_0_-8px_0_4px_#140E66] flex flex-col items-center justify-center w-full h-full rounded-[40px] md:rounded-[72px] border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50 px-4 md:px-8">
+        <div className="absolute top-0 transform -translate-y-1/2">
           <motion.img
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 1 * 0.1 + 0.3, type: "spring" }}
-            className="md:w-[100px] md:h-[100px] lg:w-[150px] lg:h-[150px] w-[90px] h-[90px]"
+            transition={{ delay: 0.4, type: "spring" }}
+            className="w-[90px] h-[90px] md:w-[150px] md:h-[150px]"
             src="/images/logo.svg"
-            alt="Logo for the game"
+            alt="Logo"
           />
         </div>
 
-        <div className="text-white text-center">
-          <h1 className="text-white text-[20px] lg:text-[40px]">Sign Up </h1>
+        <div className="text-white text-center mt-12 md:mt-8 mb-4">
+          <h1 className="text-white text-[24px] md:text-[40px] font-bold">
+            Sign Up
+          </h1>
         </div>
 
-        <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
-          <div>
+        <form
+          className="space-y-3 w-full flex flex-col items-center"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className="w-full md:w-[400px]">
             <input
               type="text"
               placeholder="Username"
-              className="lg:w-[400px] lg:h-[60px] px-5 text-[20px] rounded-[20px]  bg-white"
+              className="w-full h-[50px] md:h-[60px] px-5 text-[18px] md:text-[20px] rounded-[20px] bg-white outline-none text-black"
               {...register("username", {
                 required: "Username is required",
-                minLength: {
-                  value: 3,
-                  message: "Username must be at least 3 characters long",
-                },
+                minLength: { value: 3, message: "Min 3 chars" },
               })}
             />
-
             {errors.username?.message && (
-              <p className="text-red-500 text-sm font-semibold mt-1">
+              <p className="text-[#FF4A4A] text-sm font-bold mt-1 ml-2 text-left">
                 {errors.username.message}
               </p>
             )}
           </div>
 
-          <div>
+          <div className="w-full md:w-[400px]">
             <input
               type="email"
-              id="email"
-              placeholder="Email (Optional)"
-              className="lg:w-[400px] lg:h-[60px] px-5 text-[20px] rounded-[20px]  bg-white"
+              placeholder="Email"
+              className="w-full h-[50px] md:h-[60px] px-5 text-[18px] md:text-[20px] rounded-[20px] bg-white outline-none text-black"
               {...register("email")}
             />
           </div>
 
-          <div className="relative">
+          <div className="w-full md:w-[400px] relative">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="lg:w-[400px] lg:h-[60px] px-5 pr-12 text-[20px] rounded-[20px]  bg-white"
+              className="w-full h-[50px] md:h-[60px] px-5 pr-12 text-[18px] md:text-[20px] rounded-[20px] bg-white outline-none text-black"
               {...register("password", {
                 required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters long",
-                },
+                minLength: { value: 6, message: "Min 6 chars" },
               })}
             />
             <button
               type="button"
-              aria-label={showPassword ? "Hide password" : "Show password"}
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#2463FF]"
             >
               {showPassword ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -124,7 +130,7 @@ const SignUpForm = () => {
               ) : (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -145,37 +151,32 @@ const SignUpForm = () => {
               )}
             </button>
             {errors.password?.message && (
-              <p className="text-red-500 text-sm font-semibold mt-1">
+              <p className="text-[#FF4A4A] text-sm font-bold mt-1 ml-2 text-left">
                 {errors.password.message}
               </p>
             )}
           </div>
 
-          <div className="relative">
+          <div className="w-full md:w-[400px] relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
-              className="lg:w-[400px] lg:h-[60px] px-5 pr-12 text-[20px] rounded-[20px]  bg-white"
+              className="w-full h-[50px] md:h-[60px] px-5 pr-12 text-[18px] md:text-[20px] rounded-[20px] bg-white outline-none text-black"
               {...register("confirmPassword", {
-                required: "Please confirm your password",
+                required: "Confirm your password",
                 validate: (value) =>
                   value === checkPassword || "Passwords do not match",
               })}
             />
             <button
               type="button"
-              aria-label={
-                showConfirmPassword
-                  ? "Hide confirm password"
-                  : "Show confirm password"
-              }
               onClick={() => setShowConfirmPassword((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#2463FF]"
             >
               {showConfirmPassword ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -196,7 +197,7 @@ const SignUpForm = () => {
               ) : (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -217,7 +218,7 @@ const SignUpForm = () => {
               )}
             </button>
             {errors.confirmPassword?.message && (
-              <p className="text-red-500 text-sm font-semibold mt-1">
+              <p className="text-[#FF4A4A] text-sm font-bold mt-1 ml-2 text-left">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -225,13 +226,26 @@ const SignUpForm = () => {
 
           <button
             type="submit"
-            className="w-[400px] px-5 lg:text-[20px] text-white rounded-[20px] h-[60px] cursor-pointer transition-all duration-200 font-normal bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF]"
+            className="w-full md:w-[400px] h-[50px] md:h-[60px] text-[18px] md:text-[20px] text-white rounded-[20px] font-bold bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] active:scale-95 transition-all mt-2"
           >
             Sign Up
           </button>
         </form>
+
+        <div className="mt-4 mb-2 text-center">
+          <p className="text-[#C2D6FF] text-[20px]">
+            Current gamer?{" "}
+            <Link
+              to="/login"
+              className="text-white font-bold underline decoration-2 underline-offset-4 transition-colors"
+            >
+              Log In
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 };
+
 export default SignUpForm;

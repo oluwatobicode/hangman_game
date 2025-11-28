@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import MenuButton from "../ui/MenuButton";
+import { useAuth } from "../contexts/AuthProvider";
 
 const Menu = () => {
   const navigate = useNavigate();
+  const { state } = useAuth();
 
   const handleClickPlay = () => {
     navigate("/category");
@@ -79,9 +81,15 @@ const Menu = () => {
         </motion.button>
 
         <div className="flex flex-col gap-4 w-full items-center px-4">
-          <MenuButton onClick={handleClickProfile}>Profile</MenuButton>
+          {state.isAuthenticated && (
+            <>
+              <MenuButton onClick={handleClickProfile}>Profile</MenuButton>
 
-          <MenuButton onClick={handleClickLeaderboard}>Leaderboard</MenuButton>
+              <MenuButton onClick={handleClickLeaderboard}>
+                Leaderboard
+              </MenuButton>
+            </>
+          )}
 
           <MenuButton onClick={handleClickRules}>How to play</MenuButton>
         </div>
