@@ -37,7 +37,7 @@ const SignUpForm = () => {
       navigate(from, { replace: true });
     } catch (error) {
       console.log(error);
-      toast.error("Sign up failed. Try a different username.");
+      toast.error(state.error);
     }
   };
 
