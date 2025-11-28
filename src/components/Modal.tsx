@@ -27,10 +27,8 @@ interface GameContextType {
   gameReset: () => void;
 }
 
-// --- Component ---
 const Modal: React.FC = () => {
   const navigate = useNavigate();
-  // Cast the context to our defined type so TS knows about `gameEnd`
   const { state, showMenu, gameReset } = useGame() as GameContextType;
   const { width, height } = useWindowSize();
 

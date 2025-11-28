@@ -1,11 +1,15 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useReducer,
 } from "react";
 import api from "../api/axiosInstance";
+import useSound from "use-sound";
+import win from "/public/win.wav";
+import fail from "/public/fail.wav";
 
 type GameStart = {
   _id: string | undefined;
@@ -35,18 +39,19 @@ type GameEnd = {
 
 type GameState = {
   won: boolean;
-  usedHint: boolean;
   wrongGuesses: number | null;
   duration: number | null;
   gameStart: GameStart | null;
   gameEnd: GameEnd | null;
-  category: string | null;
+  category: string | undefined;
   playerHealth: number;
   maxPlayerHealth: number;
   guessedLetters: string[];
   gameStatus: "paused" | "playing" | "won" | "lost" | "setup" | string;
   showMenu: boolean;
-  secretWord: string | null;
+  showHint: boolean;
+  usedHint: boolean;
+  secretWord: string | undefined;
 };
 
 type GameContextType = {
@@ -63,7 +68,10 @@ type GameContextType = {
   handleAlphabetClick: (letter: string) => void;
   displaySecretWord: string;
   showMenu: (mode: boolean) => void;
+  showHint: (hint: boolean) => void;
   updateGameStatus: (mode: string) => void;
+  winSound: () => void;
+  lostSound: () => void;
 };
 
 type GameActionType =
@@ -72,23 +80,27 @@ type GameActionType =
   | { type: "GUESS_LETTER"; payload: string }
   | { type: "REDUCE_HEALTH"; payload: number }
   | { type: "SHOW_MENU"; payload: boolean }
+  | { type: "SHOW_HINT"; payload: boolean }
+  | { type: "TICK" }
+  | { type: "WRONG_GUESS" }
   | { type: "GAME_STATUS"; payload: string }
   | { type: "GAME_RESET"; payload: GameState };
 
 const initialGameState: GameState = {
   won: false,
-  usedHint: false,
   wrongGuesses: null,
   duration: null,
   gameStart: null,
   gameEnd: null,
   showMenu: false,
+  showHint: false,
+  usedHint: false,
   gameStatus: "setup",
   playerHealth: 100,
   maxPlayerHealth: 100,
   guessedLetters: [],
-  secretWord: null,
-  category: null,
+  secretWord: undefined,
+  category: undefined,
 };
 
 const gameReducer = (state: GameState, action: GameActionType): GameState => {
@@ -122,6 +134,25 @@ const gameReducer = (state: GameState, action: GameActionType): GameState => {
         gameStatus: action.payload ? "paused" : "playing",
       };
 
+    case "SHOW_HINT":
+      return {
+        ...state,
+        showHint: action.payload,
+        usedHint: action.payload ? true : state.usedHint,
+      };
+
+    case "TICK":
+      return {
+        ...state,
+        duration: (state.duration || 0) + 1,
+      };
+
+    case "WRONG_GUESS":
+      return {
+        ...state,
+        wrongGuesses: (state.wrongGuesses || 0) + 1,
+      };
+
     case "GAME_END":
       return { ...state, gameEnd: action.payload };
 
@@ -147,6 +178,8 @@ export const GameProviderFinal = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
+  const [playWin] = useSound(win);
+  const [playLost] = useSound(fail);
 
   const gameStart = async (category: GameStartInput) => {
     try {
@@ -179,23 +212,6 @@ export const GameProviderFinal = ({
       });
 
       console.log(response.data);
-
-      /* 
-      {
-    "status": "success",
-    "stats": {
-        "totalWins": 12,
-        "totalLoses": 8,
-        "currentStreak": 12,
-        "bestStreak": 12,
-        "winRate": 60
-    },
-    "newAchievements": [],
-    "rank": 1,
-    "score": 250,
-    "totalAchievements": 14
-}
-      */
 
       const GameEndResponse = {
         newAchievements: response.data?.newAchievements,
@@ -246,7 +262,14 @@ export const GameProviderFinal = ({
     dispatch({ type: "GUESS_LETTER", payload: letter });
 
     if (state.secretWord) {
-      reduceHealthPoints(10, letter, state.secretWord);
+      const isCorrect = state.secretWord
+        .toLowerCase()
+        .includes(letter.toLowerCase());
+
+      if (!isCorrect) {
+        dispatch({ type: "WRONG_GUESS" });
+        reduceHealthPoints(10, letter, state.secretWord);
+      }
     }
   };
 
@@ -275,9 +298,33 @@ export const GameProviderFinal = ({
     dispatch({ type: "SHOW_MENU", payload: mode });
   };
 
+  const showHint = (hint: boolean) => {
+    dispatch({ type: "SHOW_HINT", payload: hint });
+  };
+
   const updateGameStatus = (mode: string) => {
     dispatch({ type: "GAME_STATUS", payload: mode });
   };
+
+  const winSound = useCallback(() => {
+    playWin();
+  }, [playWin]);
+
+  const lostSound = useCallback(() => {
+    playLost();
+  }, [playLost]);
+
+  useEffect(() => {
+    let interval: number;
+
+    if (state.gameStatus === "playing") {
+      interval = window.setInterval(() => {
+        dispatch({ type: "TICK" });
+      }, 1000);
+    }
+
+    return () => window.clearInterval(interval);
+  }, [state.gameStatus]);
 
   // checking if the user has won
   useEffect(() => {
@@ -291,8 +338,9 @@ export const GameProviderFinal = ({
 
     if (checkIsWordGuessed(state.secretWord, state.guessedLetters)) {
       updateGameStatus("won");
+      winSound();
     }
-  }, [state.guessedLetters, state.secretWord, state.gameStatus]);
+  }, [state.guessedLetters, state.secretWord, state.gameStatus, winSound]);
 
   // checking if the user has lost
   useEffect(() => {
@@ -300,8 +348,9 @@ export const GameProviderFinal = ({
 
     if (state.playerHealth <= 0) {
       updateGameStatus("lost");
+      lostSound();
     }
-  }, [state.playerHealth, state.gameStatus]);
+  }, [state.playerHealth, state.gameStatus, lostSound]);
 
   // sending the data if the user has won or lost
   useEffect(() => {
@@ -309,7 +358,7 @@ export const GameProviderFinal = ({
 
     const gameEndInput: GameEndInput = {
       won: state.gameStatus === "won" ? true : false,
-      usedHint: false,
+      usedHint: state.showHint,
       duration: state.duration || 0,
       wrongGuesses: state.wrongGuesses || 0,
       gameData: {
@@ -337,6 +386,9 @@ export const GameProviderFinal = ({
     gameEnd,
     displaySecretWord,
     showMenu,
+    winSound,
+    lostSound,
+    showHint,
     updateGameStatus,
   };
 
@@ -354,14 +406,3 @@ export const useGame = () => {
 };
 
 export default GameProviderFinal;
-
-/* next things to work on 
-1) tracking the following - [[
-- usedHint
-- duration
-- wrongGuesses
-]]
-2) sound effects for a when user wins
-3) difficulty level
-
-*/
