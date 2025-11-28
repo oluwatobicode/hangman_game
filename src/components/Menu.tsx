@@ -93,6 +93,11 @@ const Menu = () => {
 
           <MenuButton onClick={handleClickRules}>How to play</MenuButton>
         </div>
+        <h3 className="text-center text-white tracking-[3px] cursor-pointer mt-2">
+          <a href="https://oluwatobii.xyz" target="_blank">
+            Built by Coding Ninja 🥷🏾
+          </a>
+        </h3>
       </div>
     </div>
   );

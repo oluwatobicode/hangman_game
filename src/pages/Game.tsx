@@ -22,6 +22,11 @@ const Game = () => {
             <GameBoard />
           </div>
         </div>
+        <h3 className="text-center text-white tracking-[3px] cursor-pointer mb-10">
+          <a href="https://oluwatobii.xyz" target="_blank">
+            Built by Coding Ninja 🥷🏾
+          </a>
+        </h3>
       </div>
     </main>
   );
