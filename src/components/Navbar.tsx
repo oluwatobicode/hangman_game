@@ -1,27 +1,29 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useGameContext } from "../contexts/GameProvider";
 import Modal from "./Modal";
+import { useGame } from "../contexts/GameProviderFinal";
+import { useParams } from "react-router";
+import HintModal from "./HintModal";
 
 const Navbar = () => {
-  const {
-    category,
-    showMenu,
-    setShowMenu,
-    playerHealth,
-    maxPlayerHealth,
-    gameStatus,
-    setGameStatus,
-  } = useGameContext();
+  const { category } = useParams();
+
+  const { state, showMenu, showHint } = useGame();
+
+  console.log(state.showMenu);
 
   const toggleMenu = () => {
-    if (!showMenu && gameStatus === "playing") {
-      setGameStatus("paused");
-    }
-    setShowMenu(!showMenu);
+    showMenu(true);
+  };
+
+  const toggleHint = () => {
+    showHint(true);
+    console.log(state.showHint);
   };
 
   const healthPercentage =
-    maxPlayerHealth > 0 ? (playerHealth / maxPlayerHealth) * 100 : 0;
+    state.maxPlayerHealth > 0
+      ? (state.playerHealth / state.maxPlayerHealth) * 100
+      : 0;
 
   console.log(healthPercentage);
 
@@ -42,12 +44,29 @@ const Navbar = () => {
         </motion.button>
 
         <h1 className="lg:text-[88px] md:text-[48px] text-[40px] md:tracking-[5%] leading-[-0.5%] md:leading-[120%] text-white">
-          {category}
+          {category?.toUpperCase().split("-").join(" ")}
         </h1>
       </div>
 
       <div className="ml-auto flex items-center gap-[16px] md:gap-[40px]">
-        <div className="w-[57px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-full lg:h-[31px] rounded-[96px] bg-white">
+        <button
+          onClick={toggleHint}
+          // Disable if: 1. They used the hint OR 2. Game is not active
+          disabled={state.usedHint || state.gameStatus !== "playing"}
+          className="
+    bg-white/20 text-white border-2 border-white
+    rounded-full px-6 py-2 text-[20px] font-bold transition-all duration-200
+    hover:bg-white hover:text-[#2463FF] 
+    disabled:opacity-50 
+    disabled:cursor-not-allowed 
+    disabled:hover:bg-white/20 
+    disabled:hover:text-white
+  "
+        >
+          {state.usedHint ? "Hint Used" : "Hint?"}
+        </button>
+
+        <div className="w-[57px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-full lg:h-[31px]  rounded-[96px] bg-white">
           <div
             className="absolute lg:h-[13px] md:h-[13px] h-[8px] transform translate-y-1 translate-x-1 md:translate-y-2.5 md:translate-x-2.5 bg-[#261676] rounded-[96px] transition-all duration-300 ease-out"
             style={{ width: `${healthPercentage}%` }}
@@ -64,10 +83,12 @@ const Navbar = () => {
       </div>
 
       <AnimatePresence initial={false}>
-        {(gameStatus === "won" ||
-          gameStatus === "lost" ||
-          gameStatus === "paused") && <Modal />}
+        {(state.gameStatus === "won" ||
+          state.gameStatus === "lost" ||
+          state.gameStatus === "paused") && <Modal />}
       </AnimatePresence>
+
+      <AnimatePresence>{state.showHint && <HintModal />}</AnimatePresence>
     </nav>
   );
 };

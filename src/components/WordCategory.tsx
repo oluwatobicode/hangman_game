@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import { useGameContext } from "../contexts/GameProvider";
 import { motion } from "framer-motion";
 
 const categories = [
@@ -9,7 +8,7 @@ const categories = [
   },
   {
     name: "TV SHOWS",
-    type: "TV Shows",
+    type: "TV-Shows",
   },
   {
     name: "COUNTRIES",
@@ -17,7 +16,7 @@ const categories = [
   },
   {
     name: "CAPITAL CITIES",
-    type: "Capital Cities",
+    type: "Capital-Cities",
   },
   {
     name: "ANIMALS",
@@ -31,16 +30,13 @@ const categories = [
 
 const WordCategory = () => {
   const navigate = useNavigate();
-  const { setSelectedCategory, setGameStatus } = useGameContext();
 
   const handleGoBack = () => {
     navigate("/");
   };
 
   const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
-    navigate("/category/game");
-    setGameStatus("playing");
+    navigate(`/category/game/${category}`);
   };
 
   return (
@@ -80,7 +76,7 @@ const WordCategory = () => {
                   duration: 0.5,
                 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => handleCategoryClick(el.name)}
+                onClick={() => handleCategoryClick(el.type.toLowerCase())}
                 className="text-white text-[24px] md:text-[48px]  tracking-[5%] leading-[120%] cursor-pointer transition-all duration-200 font-normal bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] lg:w-[384px] lg:h-[190px] md:w-full md:h-[182.67px] w-full h-[77px] md:rounded-[40px] rounded-[20px]"
               >
                 {el.name}

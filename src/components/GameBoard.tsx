@@ -1,32 +1,19 @@
-import { useGameContext } from "../contexts/GameProvider";
 import { motion } from "framer-motion";
+import { useGame } from "../contexts/GameProviderFinal";
 
 const GameBoard = () => {
-  const { secretWord, guessedLetters, displaySecretWord, handleAlphabetClick } =
-    useGameContext();
+  const { state, handleAlphabetClick } = useGame();
 
   const alphabet = Array.from({ length: 26 }, (_, i) =>
     String.fromCharCode(65 + i)
   );
-
-  console.log(secretWord);
-
-  console.log(alphabet);
-
-  const secretWordMap = Array.from({ length: secretWord.length }, (_, i) =>
-    String(65 + i)
-  );
-
-  console.log(secretWordMap);
-
-  console.log(displaySecretWord);
 
   return (
     <div>
       <div className="grid grid-cols-9 grid-rows-3 gap-[24px] items-center w-full">
         {alphabet.map((el, i) => (
           <motion.button
-            disabled={guessedLetters.some(
+            disabled={state.guessedLetters.some(
               (guessed) => guessed.toLowerCase() === el.toLowerCase()
             )}
             // whileTap={{ scale: 0.2 }}

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
+import MenuButton from "../ui/MenuButton";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -12,37 +13,78 @@ const Menu = () => {
     navigate("/rules");
   };
 
+  const handleClickLeaderboard = () => {
+    navigate("/leaderboard");
+  };
+
+  const handleClickProfile = () => {
+    navigate("/profile");
+  };
+
   return (
-    <div className="shadow-[inset_0_6px_0_8px_#2463FF] h-[481px] w-[324px] md:w-[592px] md:h-[500px] rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50">
-      <div className="shadow-[inset_0_-8px_0_4px_#140E66]  flex flex-col items-center justify-center h-[481px] w-[324px] md:w-[592px] md:h-[500px] rounded-[72px] relative border bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50">
-        <div className="absolute transform -translate-y-12 pt-5 top-0  md:-translate-y-20 md:translate-x-10 translate-x-17 -left-10 md:left-20">
+    <div
+      className="
+      relative 
+      w-[90%] max-w-[324px] md:max-w-[592px] 
+      min-h-[500px] h-auto
+      rounded-[72px] 
+      bg-gradient-to-b from-[#344ABA]/50 to-[#001479]/50
+      shadow-[inset_0_6px_0_8px_#2463FF]
+      border-transparent
+      flex flex-col
+    "
+    >
+      <div
+        className="
+        w-full h-full flex-1
+        flex flex-col items-center justify-center 
+        rounded-[72px] 
+        shadow-[inset_0_-8px_0_4px_#140E66]
+        relative
+        py-14 pb-16 
+      "
+      >
+        <div className="absolute -top-12 md:-top-5 left-1/2 transform -translate-x-1/2 z-10 w-full flex justify-center">
           <motion.img
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 1 * 0.1 + 0.3, type: "spring" }}
-            className="md:w-[373.69px] md:h-[185px] lg:w-[373.69px] lg:h-[185px] w-[263px] h-[126.72px]"
+            className="
+              w-[263px] h-auto 
+              md:w-[303.69px] 
+              drop-shadow-lg
+            "
             src="/images/logo.svg"
             alt="Logo for the game"
           />
         </div>
 
         <motion.button
-          whileHover={{ scale: 1.2 }}
-          whileTap={{ scale: 0.8 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={handleClickPlay}
-          className="shadow-[inset_0px_-4px_0px_5px_#243041,inset_0px_-12px_0px_11px_#9D2DF5] md:w-[200px] md:h-[200px] w-[160px] h-[160px] flex items-center justify-center cursor-pointer rounded-full mt-20 bg-gradient-to-b from-[#FE71FE] to-[#7199FF]"
+          className="
+            mt-10 md:mt-20 mb-10
+            w-[140px] h-[140px] md:w-[160px] md:h-[160px] 
+            flex items-center justify-center cursor-pointer rounded-full 
+            bg-gradient-to-b from-[#FE71FE] to-[#7199FF]
+            shadow-[inset_0px_-4px_0px_5px_#243041,inset_0px_-12px_0px_11px_#9D2DF5]
+          "
         >
-          <img src="/images/icon-play.svg" alt="Play-icon" />
+          <img
+            src="/images/icon-play.svg"
+            alt="Play-icon"
+            className="w-1/3 h-1/3"
+          />
         </motion.button>
 
-        <motion.button
-          whileHover={{ scale: 1.2 }}
-          whileTap={{ scale: 0.8 }}
-          onClick={handleClickRules}
-          className="mt-10 shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] text-white tracking-[5%] leading-[120%] cursor-pointer w-[260px] h-[62px] text-[32px] font-normal rounded-[40px] bg-[#2463FF]"
-        >
-          How to play
-        </motion.button>
+        <div className="flex flex-col gap-4 w-full items-center px-4">
+          <MenuButton onClick={handleClickProfile}>Profile</MenuButton>
+
+          <MenuButton onClick={handleClickLeaderboard}>Leaderboard</MenuButton>
+
+          <MenuButton onClick={handleClickRules}>How to play</MenuButton>
+        </div>
       </div>
     </div>
   );
