@@ -87,9 +87,19 @@ const UserProfile = () => {
   const allAchievements = achievementsData?.data.achievements || [];
   const user = data?.data?.user;
 
+  console.log(allAchievements);
+  //[0]._id;
+  console.log(user?.unlockedAchievements); // 69294cac2ea31c54c38d60dc - acgievementId
+
+  console.log(user);
+
   const unlockedList = allAchievements.filter((ach) =>
-    user?.unlockedAchievements.includes(ach.achievementId)
+    //console.log('test', ach)
+
+    user?.unlockedAchievements.includes(ach._id)
   );
+
+  console.log(unlockedList);
 
   const lockedList = allAchievements.filter(
     (ach) => !user?.unlockedAchievements.includes(ach.achievementId)
