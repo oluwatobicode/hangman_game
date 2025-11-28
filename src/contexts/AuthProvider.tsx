@@ -153,9 +153,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         payload: { username: loginData.username, email: "" },
       });
     } catch (error) {
-      console.log(error.response.data.message);
-      dispatch({ type: "ERROR", payload: error.response.data.message });
-      throw new Error("Invalid creditaials");
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        console.log(error.response.data.message);
+        dispatch({ type: "ERROR", payload: error.response.data.message });
+      } else {
+        dispatch({ type: "ERROR", payload: "An error occurred during login" });
+      }
+      throw new Error("Invalid credentials");
     }
   };
 
@@ -180,10 +184,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
     } catch (error) {
-      console.log(error);
-      console.log(error.response.data.message);
-      dispatch({ type: "ERROR", payload: error.response.data.message });
-      throw new Error(error.response.data.message);
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        console.log(error.response.data.message);
+        dispatch({ type: "ERROR", payload: error.response.data.message });
+        throw new Error(error.response.data.message);
+      } else {
+        const errorMessage = "An error occurred during signup";
+        dispatch({ type: "ERROR", payload: errorMessage });
+        throw new Error(errorMessage);
+      }
     }
   };
 
