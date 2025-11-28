@@ -153,8 +153,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         payload: { username: loginData.username, email: "" },
       });
     } catch (error) {
-      console.log(error);
-      dispatch({ type: "ERROR", payload: "Invalid credentials" });
+      console.log(error.response.data.message);
+      dispatch({ type: "ERROR", payload: error.response.data.message });
+      throw new Error("Invalid creditaials");
     }
   };
 
@@ -180,7 +181,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (error) {
       console.log(error);
-      dispatch({ type: "ERROR", payload: "Signup failed" });
+      console.log(error.response.data.message);
+      dispatch({ type: "ERROR", payload: error.response.data.message });
+      throw new Error(error.response.data.message);
     }
   };
 

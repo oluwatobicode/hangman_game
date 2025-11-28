@@ -27,6 +27,12 @@ type AchievementProgress = {
   perfectGame: AchievementWins;
 };
 
+interface UnlockedAchievement {
+  achievementId: Achievement;
+  unlockedAt: string;
+  _id: string;
+}
+
 interface User {
   _id: string;
   username: string;
@@ -38,7 +44,7 @@ interface User {
   bestStreak: number;
   score: number;
   winRate: number;
-  unlockedAchievements: string[];
+  unlockedAchievements: UnlockedAchievement[];
   achievementProgress: AchievementProgress;
 }
 
@@ -87,30 +93,23 @@ const UserProfile = () => {
   const allAchievements = achievementsData?.data.achievements || [];
   const user = data?.data?.user;
 
-  console.log(allAchievements);
-  //[0]._id;
-  console.log(user?.unlockedAchievements); // 69294cac2ea31c54c38d60dc - acgievementId
-
-  console.log(user);
-
-  const unlockedList = allAchievements.filter((ach) =>
-    //console.log('test', ach)
-
-    user?.unlockedAchievements.includes(ach._id)
+  const unlockedAchievementIds = new Set(
+    user?.unlockedAchievements?.map((ua) => ua.achievementId.achievementId) ||
+      []
   );
 
-  console.log(unlockedList);
+  const unlockedList =
+    user?.unlockedAchievements?.map((ua) => ua.achievementId) || [];
 
+  // Filter locked achievements (those not in unlockedAchievementIds)
   const lockedList = allAchievements.filter(
-    (ach) => !user?.unlockedAchievements.includes(ach.achievementId)
+    (ach) => !unlockedAchievementIds.has(ach.achievementId)
   );
 
   const displayList =
     achievementFilter === "unlocked" ? unlockedList : lockedList;
 
-  // --- Helper for Rarity Colors ---
   const getRarityColor = (rarity: string, isLocked: boolean) => {
-    // If locked, use a dimmer blue border/text for rarity
     if (isLocked) return "text-[#3C74FF] border-[#3C74FF]/50 opacity-70";
 
     switch (rarity) {

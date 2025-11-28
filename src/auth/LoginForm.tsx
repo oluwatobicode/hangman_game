@@ -28,7 +28,7 @@ const LoginForm = () => {
       navigate(from, { replace: true });
     } catch (error) {
       console.log(error);
-      toast.error("Login failed. Check your username/password.");
+      toast.error(state.error);
     }
   };
 
