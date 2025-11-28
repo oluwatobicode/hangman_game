@@ -16,7 +16,7 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm<loginData>();
 
-  const { logIn } = useAuth();
+  const { logIn, state } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/category";
@@ -99,7 +99,7 @@ const LoginForm = () => {
             type="submit"
             className="w-full md:w-[400px] h-[50px] md:h-[60px] text-[18px] md:text-[20px] text-white rounded-[20px] font-bold bg-[#2463FF] shadow-[inset_0px_-2px_0_3px_#140E66,inset_0px_1px_0px_6px_#3C74FF] active:scale-95 transition-all"
           >
-            Login
+            {state.isLoading ? "Logging you in" : "Login"}
           </button>
         </form>
 
