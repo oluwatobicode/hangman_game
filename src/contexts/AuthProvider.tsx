@@ -38,7 +38,6 @@ type AuthContextAction = {
   logIn: (data: LoginData) => void;
   signUp: (data: SignUpData) => void;
   logout: () => void;
-  checkAuthStatus: () => void;
 };
 
 const initialState: AuthState = {
@@ -134,7 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log(error);
       dispatch({
         type: "ERROR",
-        payload: "there was an error",
+        payload: "There was an error, try again later",
       });
     }
   };
@@ -151,8 +150,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       console.log(response.data);
     } catch (error) {
-      console.log(error.message);
-      dispatch({ type: "ERROR", payload: error.message });
+      console.log(error);
+      dispatch({
+        type: "ERROR",
+        payload: "There was an error, try again later",
+      });
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const response = await api.post("/logout");
+
+      console.log(response.data);
+      dispatch({ type: "Logout" });
+
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: "ERROR",
+        payload: "There was an error, try again later",
+      });
     }
   };
 
@@ -160,6 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     state,
     logIn,
     signUp,
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
