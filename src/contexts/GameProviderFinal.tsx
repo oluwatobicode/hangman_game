@@ -57,6 +57,7 @@ type GameState = {
 type GameContextType = {
   state: GameState;
   gameStart: (category: GameStartInput) => void;
+  playAgain: (category: GameStartInput) => void;
   gameEnd: (gameEndInput: GameEndInput) => void;
   gameReset: () => void;
   checkIsWordGuessed: (word: string, guessedLetters: string[]) => boolean;
@@ -76,6 +77,7 @@ type GameContextType = {
 
 type GameActionType =
   | { type: "GAME_START"; payload: GameStart }
+  | { type: "PLAY_AGAIN"; payload: GameStart }
   | { type: "GAME_END"; payload: GameEnd }
   | { type: "GUESS_LETTER"; payload: string }
   | { type: "REDUCE_HEALTH"; payload: number }
@@ -96,8 +98,8 @@ const initialGameState: GameState = {
   showHint: false,
   usedHint: false,
   gameStatus: "setup",
-  playerHealth: 100,
-  maxPlayerHealth: 100,
+  playerHealth: 90,
+  maxPlayerHealth: 90,
   guessedLetters: [],
   secretWord: undefined,
   category: undefined,
@@ -153,6 +155,17 @@ const gameReducer = (state: GameState, action: GameActionType): GameState => {
         wrongGuesses: (state.wrongGuesses || 0) + 1,
       };
 
+    case "PLAY_AGAIN":
+      return {
+        ...initialGameState,
+        gameStatus: "playing",
+        gameStart: action.payload,
+        category: action.payload.category,
+        secretWord: action.payload.word,
+        guessedLetters: [],
+        showMenu: false,
+      };
+
     case "GAME_END":
       return { ...state, gameEnd: action.payload };
 
@@ -205,6 +218,32 @@ export const GameProviderFinal = ({
       console.log(error);
     }
   };
+
+  const playAgain = async (category: GameStartInput) => {
+    try {
+      const response = await api.get("/game/start", {
+        params: category,
+      });
+
+      console.log(response.data);
+
+      console.log(response.data.data);
+
+      const GameStartResponse = {
+        _id: response.data.data.id,
+        word: response.data.data.word,
+        category: response.data.data.category,
+        hint: response.data.data.hint,
+        difficulty: response.data.data.difficulty,
+        length: response.data.data.length,
+      };
+
+      dispatch({ type: "PLAY_AGAIN", payload: GameStartResponse });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const gameEnd = async (gameEndInput: GameEndInput) => {
     try {
       const response = await api.post("/game/end", {
@@ -385,6 +424,7 @@ export const GameProviderFinal = ({
     gameStart,
     gameEnd,
     displaySecretWord,
+    playAgain,
     showMenu,
     winSound,
     lostSound,

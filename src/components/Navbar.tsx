@@ -66,7 +66,7 @@ const Navbar = () => {
           {state.usedHint ? "Hint Used" : "Hint?"}
         </button>
 
-        <div className="w-[57px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-full lg:h-[31px]  rounded-[96px] bg-white">
+        <div className="w-[60px] relative h-[16px] md:w-[160px] md:h-[31px] lg:max-w-full lg:h-[31px]  rounded-[96px] bg-white">
           <div
             className="absolute lg:h-[13px] md:h-[13px] h-[8px] transform translate-y-1 translate-x-1 md:translate-y-2.5 md:translate-x-2.5 bg-[#261676] rounded-[96px] transition-all duration-300 ease-out"
             style={{ width: `${healthPercentage}%` }}

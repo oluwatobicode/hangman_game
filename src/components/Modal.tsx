@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "../contexts/GameProviderFinal";
 import { useWindowSize } from "react-use";
@@ -14,23 +14,11 @@ interface Achievement {
   points: number;
 }
 
-interface GameState {
-  gameStatus: "won" | "lost" | "paused" | "idle";
-  gameEnd?: {
-    newAchievements?: Achievement[]; // Array of Achievement objects
-  };
-}
-
-interface GameContextType {
-  state: GameState;
-  showMenu: (show: boolean) => void;
-  gameReset: () => void;
-}
-
 const Modal: React.FC = () => {
   const navigate = useNavigate();
-  const { state, showMenu, gameReset } = useGame() as GameContextType;
+  const { state, showMenu, gameReset, playAgain } = useGame();
   const { width, height } = useWindowSize();
+  const { category } = useParams();
 
   const newAchievements: Achievement[] =
     (state.gameStatus === "won" ? state.gameEnd?.newAchievements : []) || [];
@@ -38,6 +26,13 @@ const Modal: React.FC = () => {
   const quiteGame = () => {
     gameReset();
     navigate("/");
+  };
+
+  const playAgainGame = () => {
+    if (category) {
+      playAgain({ category });
+      showMenu(false);
+    }
   };
 
   const handleNewCategory = () => {
@@ -132,6 +127,14 @@ const Modal: React.FC = () => {
             )}
 
             <div className="flex flex-col items-center gap-4 w-full px-4">
+              {state.gameStatus === "won" && (
+                <MenuButton
+                  onClick={playAgainGame}
+                  text="PLAY AGAIN"
+                  variant="blue"
+                />
+              )}
+
               {state.gameStatus === "paused" && (
                 <MenuButton
                   onClick={handleContinue}
